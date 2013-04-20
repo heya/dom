@@ -1,5 +1,5 @@
-define(["exports", "./_base/kernel", "./sniff", "./_base/lang", "./dom", "./dom-style", "./dom-construct", "./_base/connect"],
-		function(exports, dojo, has, lang, dom, style, ctr, conn){
+define(["heya-has/sniff", "./main", "./style", "./construct"],
+		function(has, dom, style, ctr){
 	// module:
 	//		dojo/dom-prop
 	// summary:
@@ -11,10 +11,13 @@ define(["exports", "./_base/kernel", "./sniff", "./_base/lang", "./dom", "./dom-
 	// Element properties Functions
 	// =============================
 
-	// helper to connect events
-	var _evtHdlrMap = {}, _ctr = 0, _attrId = dojo._scopeName + "attrid";
+	//TODO: add a proper conn object
+	var conn = {connect: function(){}, disconnect: function(){}};
 
-	exports.names = {
+	// helper to connect events
+	var _evtHdlrMap = {}, _ctr = 0, _attrId = "attrid", module = {};
+
+	module.names = {
 		// properties renamed to avoid clashes with reserved words
 		"class": "className",
 		"for": "htmlFor",
@@ -27,7 +30,7 @@ define(["exports", "./_base/kernel", "./sniff", "./_base/lang", "./dom", "./dom-
 		valuetype: "valueType"
 	};
 
-	exports.get = function getProp(/*DOMNode|String*/ node, /*String*/ name){
+	module.get = function getProp(/*DOMNode|String*/ node, /*String*/ name){
 		// summary:
 		//		Gets a property on an HTML element.
 		// description:
@@ -47,11 +50,11 @@ define(["exports", "./_base/kernel", "./sniff", "./_base/lang", "./dom", "./dom-
 		//	|	dojo.getProp("nodeId", "foo");
 
 		node = dom.byId(node);
-		var lc = name.toLowerCase(), propName = exports.names[lc] || name;
+		var lc = name.toLowerCase(), propName = module.names[lc] || name;
 		return node[propName];	// Anything
 	};
 
-	exports.set = function setProp(/*DOMNode|String*/ node, /*String|Object*/ name, /*String?*/ value){
+	module.set = function setProp(/*DOMNode|String*/ node, /*String|Object*/ name, /*String?*/ value){
 		// summary:
 		//		Sets a property on an HTML element.
 		// description:
@@ -123,11 +126,11 @@ define(["exports", "./_base/kernel", "./sniff", "./_base/lang", "./dom", "./dom-
 		if(l == 2 && typeof name != "string"){ // inline'd type check
 			// the object form of setter: the 2nd argument is a dictionary
 			for(var x in name){
-				exports.set(node, x, name[x]);
+				module.set(node, x, name[x]);
 			}
 			return node; // DomNode
 		}
-		var lc = name.toLowerCase(), propName = exports.names[lc] || name;
+		var lc = name.toLowerCase(), propName = module.names[lc] || name;
 		if(propName == "style" && typeof value != "string"){ // inline'd type check
 			// special case: setting a style
 			style.set(node, value);
@@ -145,7 +148,7 @@ define(["exports", "./_base/kernel", "./sniff", "./_base/lang", "./dom", "./dom-
 			}
 			return node; // DomNode
 		}
-		if(lang.isFunction(value)){
+		if(typeof value == "function"){
 			// special case: assigning an event handler
 			// clobber if we can
 			var attrId = node[_attrId];
@@ -177,4 +180,6 @@ define(["exports", "./_base/kernel", "./sniff", "./_base/lang", "./dom", "./dom-
 		node[propName] = value;
 		return node;	// DomNode
 	};
+
+	return module;
 });

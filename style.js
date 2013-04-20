@@ -1,4 +1,4 @@
-define(["./sniff", "./dom"], function(has, dom){
+define(["heya-has/sniff", "./mini"], function(has, dom){
 	// module:
 	//		dojo/dom-style
 
@@ -20,7 +20,7 @@ define(["./sniff", "./dom"], function(has, dom){
 	// by testing nodeType, ecause 'document' is the 'parentNode' of 'body'
 	// it is frequently sent to this function even
 	// though it is not Element.
-	var getComputedStyle, style = {
+	var getComputedStyle, module = {
 		// summary:
 		//		This module defines the core dojo DOM style API.
 	};
@@ -49,9 +49,9 @@ define(["./sniff", "./dom"], function(has, dom){
 				node.ownerDocument.defaultView.getComputedStyle(node, null) : {};
 		};
 	}
-	style.getComputedStyle = getComputedStyle;
+	module.getComputedStyle = getComputedStyle;
 	/*=====
-	style.getComputedStyle = function(node){
+	module.getComputedStyle = function(node){
 		// summary:
 		//		Returns a "computed style" object.
 		//
@@ -116,9 +116,9 @@ define(["./sniff", "./dom"], function(has, dom){
 			return avalue;
 		};
 	}
-	style.toPixelValue = toPixel;
+	module.toPixelValue = toPixel;
 	/*=====
-	style.toPixelValue = function(node, value){
+	module.toPixelValue = function(node, value){
 		// summary:
 		//		converts style value to pixels on IE or return a numeric value.
 		// node: DOMNode
@@ -218,7 +218,7 @@ define(["./sniff", "./dom"], function(has, dom){
 
 	// public API
 
-	style.get = function getStyle(/*DOMNode|String*/ node, /*String?*/ name){
+	module.get = function getStyle(/*DOMNode|String*/ node, /*String?*/ name){
 		// summary:
 		//		Accesses styles on a node.
 		// description:
@@ -251,7 +251,7 @@ define(["./sniff", "./dom"], function(has, dom){
 		return (l == 1) ? s : _toStyleValue(n, name, s[name] || n.style[name]); /* CSS2Properties||String||Number */
 	};
 
-	style.set = function setStyle(/*DOMNode|String*/ node, /*String|Object*/ name, /*String?*/ value){
+	module.set = function setStyle(/*DOMNode|String*/ node, /*String|Object*/ name, /*String?*/ value){
 		// summary:
 		//		Sets styles on a node.
 		// node: DOMNode|String
@@ -303,10 +303,10 @@ define(["./sniff", "./dom"], function(has, dom){
 			return op ? _setOpacity(n, value) : n.style[name] = value; // Number
 		}
 		for(var x in name){
-			style.set(node, x, name[x]);
+			module.set(node, x, name[x]);
 		}
-		return style.getComputedStyle(n);
+		return module.getComputedStyle(n);
 	};
 
-	return style;
+	return module;
 });

@@ -1,5 +1,4 @@
-define(["./sniff", "./_base/window"],
-		function(has, win){
+define(["heya-has/sniff", "./window"], function(has, win){
 	// module:
 	//		dojo/dom
 
@@ -18,13 +17,13 @@ define(["./sniff", "./_base/window"],
 	// =============================
 
 	// the result object
-	var dom = {
+	var module = {
 		// summary:
 		//		This module defines the core dojo DOM API.
 	};
 
 	if(has("ie")){
-		dom.byId = function(id, doc){
+		module.byId = function(id, doc){
 			if(typeof id != "string"){
 				return id;
 			}
@@ -48,14 +47,14 @@ define(["./sniff", "./_base/window"],
 			}
 		};
 	}else{
-		dom.byId = function(id, doc){
+		module.byId = function(id, doc){
 			// inline'd type check.
 			// be sure to return null per documentation, to match IE branch.
 			return ((typeof id == "string") ? (doc || win.doc).getElementById(id) : id) || null; // DOMNode
 		};
 	}
 	/*=====
-	 dom.byId = function(id, doc){
+	 module.byId = function(id, doc){
 		 // summary:
 		 //		Returns DOM node with matching `id` attribute or falsy value (ex: null or undefined)
 		 //		if not found.  If `id` is a DomNode, this function is a no-op.
@@ -86,7 +85,7 @@ define(["./sniff", "./_base/window"],
 	 };
 	 =====*/
 
-	dom.isDescendant = function(/*DOMNode|String*/ node, /*DOMNode|String*/ ancestor){
+	module.isDescendant = function(/*DOMNode|String*/ node, /*DOMNode|String*/ ancestor){
 		// summary:
 		//		Returns true if node is a descendant of ancestor
 		// node: DOMNode|String
@@ -99,8 +98,8 @@ define(["./sniff", "./_base/window"],
 		//	|	if(dojo.isDescendant("bar", "foo")){ ... }
 
 		try{
-			node = dom.byId(node);
-			ancestor = dom.byId(ancestor);
+			node = module.byId(node);
+			ancestor = module.byId(ancestor);
 			while(node){
 				if(node == ancestor){
 					return true; // Boolean
@@ -119,7 +118,7 @@ define(["./sniff", "./_base/window"],
 	has.add("css-user-select", function(global, doc, element){
 		// Avoid exception when dom.js is loaded in non-browser environments
 		if(!element){ return false; }
-		
+
 		var style = element.style;
 		var prefixes = ["Khtml", "O", "ms", "Moz", "Webkit"],
 			i = prefixes.length,
@@ -139,7 +138,7 @@ define(["./sniff", "./_base/window"],
 	});
 
 	/*=====
-	dom.setSelectable = function(node, selectable){
+	module.setSelectable = function(node, selectable){
 		// summary:
 		//		Enable or disable selection on a node
 		// node: DOMNode|String
@@ -157,11 +156,11 @@ define(["./sniff", "./_base/window"],
 	=====*/
 
 	var cssUserSelect = has("css-user-select");
-	dom.setSelectable = cssUserSelect ? function(node, selectable){
+	module.setSelectable = cssUserSelect ? function(node, selectable){
 		// css-user-select returns a (possibly vendor-prefixed) CSS property name
-		dom.byId(node).style[cssUserSelect] = selectable ? "" : "none";
+		module.byId(node).style[cssUserSelect] = selectable ? "" : "none";
 	} : function(node, selectable){
-		node = dom.byId(node);
+		node = module.byId(node);
 
 		// (IE < 10 / Opera) Fall back to setting/removing the
 		// unselectable attribute on the element and all its children
@@ -181,5 +180,5 @@ define(["./sniff", "./_base/window"],
 		}
 	};
 
-	return dom;
+	return module;
 });

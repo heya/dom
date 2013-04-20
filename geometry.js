@@ -1,10 +1,10 @@
-define(["./sniff", "./_base/window","./dom", "./dom-style"],
+define(["heya-has/sniff", "./window", "./main", "./style"],
 		function(has, win, dom, style){
 	// module:
 	//		dojo/dom-geometry
 
 	// the result object
-	var geom = {
+	var module = {
 		// summary:
 		//		This module defines the core dojo DOM geometry API.
 	};
@@ -16,7 +16,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 	// can be either:
 	//	"border-box"
 	//	"content-box" (default)
-	geom.boxModel = "content-box";
+	module.boxModel = "content-box";
 
 	// We punt per-node box mode testing completely.
 	// If anybody cares, we can provide an additional (optional) unit
@@ -29,10 +29,10 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 
 	if(has("ie") /*|| has("opera")*/){
 		// client code may have to adjust if compatMode varies across iframes
-		geom.boxModel = document.compatMode == "BackCompat" ? "border-box" : "content-box";
+		module.boxModel = document.compatMode == "BackCompat" ? "border-box" : "content-box";
 	}
 
-	geom.getPadExtents = function getPadExtents(/*DomNode*/ node, /*Object*/ computedStyle){
+	module.getPadExtents = function getPadExtents(/*DomNode*/ node, /*Object*/ computedStyle){
 		// summary:
 		//		Returns object with special values specifically useful for node
 		//		fitting.
@@ -62,7 +62,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 
 	var none = "none";
 
-	geom.getBorderExtents = function getBorderExtents(/*DomNode*/ node, /*Object*/ computedStyle){
+	module.getBorderExtents = function getBorderExtents(/*DomNode*/ node, /*Object*/ computedStyle){
 		// summary:
 		//		returns an object with properties useful for noting the border
 		//		dimensions.
@@ -92,7 +92,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		return {l: l, t: t, r: r, b: b, w: l + r, h: t + b};
 	};
 
-	geom.getPadBorderExtents = function getPadBorderExtents(/*DomNode*/ node, /*Object*/ computedStyle){
+	module.getPadBorderExtents = function getPadBorderExtents(/*DomNode*/ node, /*Object*/ computedStyle){
 		// summary:
 		//		Returns object with properties useful for box fitting with
 		//		regards to padding.
@@ -115,8 +115,8 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 
 		node = dom.byId(node);
 		var s = computedStyle || style.getComputedStyle(node),
-			p = geom.getPadExtents(node, s),
-			b = geom.getBorderExtents(node, s);
+			p = module.getPadExtents(node, s),
+			b = module.getBorderExtents(node, s);
 		return {
 			l: p.l + b.l,
 			t: p.t + b.t,
@@ -127,7 +127,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		};
 	};
 
-	geom.getMarginExtents = function getMarginExtents(node, computedStyle){
+	module.getMarginExtents = function getMarginExtents(node, computedStyle){
 		// summary:
 		//		returns object with properties useful for box fitting with
 		//		regards to box margins (i.e., the outer-box).
@@ -169,7 +169,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 	// 2. factoring the shared code wastes cycles (function call overhead)
 	// 3. duplicating the shared code wastes bytes
 
-	geom.getMarginBox = function getMarginBox(/*DomNode*/ node, /*Object*/ computedStyle){
+	module.getMarginBox = function getMarginBox(/*DomNode*/ node, /*Object*/ computedStyle){
 		// summary:
 		//		returns an object that encodes the width, height, left and top
 		//		positions of the node's margin box.
@@ -183,7 +183,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		//		object of dojo/dom-style.getComputedStyle().
 
 		node = dom.byId(node);
-		var s = computedStyle || style.getComputedStyle(node), me = geom.getMarginExtents(node, s),
+		var s = computedStyle || style.getComputedStyle(node), me = module.getMarginExtents(node, s),
 			l = node.offsetLeft - me.l, t = node.offsetTop - me.t, p = node.parentNode, px = style.toPixelValue, pcs;
 		if(has("mozilla")){
 			// Mozilla:
@@ -217,7 +217,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		return {l: l, t: t, w: node.offsetWidth + me.w, h: node.offsetHeight + me.h};
 	};
 
-	geom.getContentBox = function getContentBox(node, computedStyle){
+	module.getContentBox = function getContentBox(node, computedStyle){
 		// summary:
 		//		Returns an object that encodes the width, height, left and top
 		//		positions of the node's content box, irrespective of the
@@ -235,7 +235,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		// fallback to offsetWidth/Height for special cases (see #3378)
 		node = dom.byId(node);
 		var s = computedStyle || style.getComputedStyle(node), w = node.clientWidth, h,
-			pe = geom.getPadExtents(node, s), be = geom.getBorderExtents(node, s);
+			pe = module.getPadExtents(node, s), be = module.getBorderExtents(node, s);
 		if(!w){
 			w = node.offsetWidth;
 			h = node.offsetHeight;
@@ -319,10 +319,10 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		// If you have assigned a different box to either one via CSS then
 		// box functions will break.
 
-		return geom.boxModel == "border-box" || node.tagName.toLowerCase() == "table" || isButtonTag(node); // boolean
+		return module.boxModel == "border-box" || node.tagName.toLowerCase() == "table" || isButtonTag(node); // boolean
 	}
 
-	geom.setContentSize = function setContentSize(/*DomNode*/ node, /*Object*/ box, /*Object*/ computedStyle){
+	module.setContentSize = function setContentSize(/*DomNode*/ node, /*Object*/ box, /*Object*/ computedStyle){
 		// summary:
 		//		Sets the size of the node's contents, irrespective of margins,
 		//		padding, or borders.
@@ -341,7 +341,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		node = dom.byId(node);
 		var w = box.w, h = box.h;
 		if(usesBorderBox(node)){
-			var pb = geom.getPadBorderExtents(node, computedStyle);
+			var pb = module.getPadBorderExtents(node, computedStyle);
 			if(w >= 0){
 				w += pb.w;
 			}
@@ -354,7 +354,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 
 	var nilExtents = {l: 0, t: 0, w: 0, h: 0};
 
-	geom.setMarginBox = function setMarginBox(/*DomNode*/ node, /*Object*/ box, /*Object*/ computedStyle){
+	module.setMarginBox = function setMarginBox(/*DomNode*/ node, /*Object*/ box, /*Object*/ computedStyle){
 		// summary:
 		//		sets the size of the node's margin box and placement
 		//		(left/top), irrespective of box model. Think of it as a
@@ -377,8 +377,8 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		// Some elements have special padding, margin, and box-model settings.
 		// To use box functions you may need to set padding, margin explicitly.
 		// Controlling box-model is harder, in a pinch you might set dojo/dom-geometry.boxModel.
-			pb = usesBorderBox(node) ? nilExtents : geom.getPadBorderExtents(node, s),
-			mb = geom.getMarginExtents(node, s);
+			pb = usesBorderBox(node) ? nilExtents : module.getPadBorderExtents(node, s),
+			mb = module.getMarginExtents(node, s);
 		if(has("webkit")){
 			// on Safari (3.1.2), button nodes with no explicit size have a default margin
 			// setting an explicit size eliminates the margin.
@@ -406,7 +406,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 	// Positioning
 	// =============================
 
-	geom.isBodyLtr = function isBodyLtr(/*Document?*/ doc){
+	module.isBodyLtr = function isBodyLtr(/*Document?*/ doc){
 		// summary:
 		//		Returns true if the current language is left-to-right, and false otherwise.
 		// doc: Document?
@@ -417,7 +417,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		return (win.body(doc).dir || doc.documentElement.dir || "ltr").toLowerCase() == "ltr"; // Boolean
 	};
 
-	geom.docScroll = function docScroll(/*Document?*/ doc){
+	module.docScroll = function docScroll(/*Document?*/ doc){
 		// summary:
 		//		Returns an object with {node, x, y} with corresponding offsets.
 		// doc: Document?
@@ -428,11 +428,11 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		var node = win.doc.parentWindow || win.doc.defaultView;   // use UI window, not dojo.global window.   TODO: use dojo/window::get() except for circular dependency problem
 		return "pageXOffset" in node ? {x: node.pageXOffset, y: node.pageYOffset } :
 			(node = has("quirks") ? win.body(doc) : doc.documentElement) &&
-				{x: geom.fixIeBiDiScrollLeft(node.scrollLeft || 0, doc), y: node.scrollTop || 0 };
+				{x: module.fixIeBiDiScrollLeft(node.scrollLeft || 0, doc), y: node.scrollTop || 0 };
 	};
 
 	if(has("ie")){
-		geom.getIeDocumentElementOffset = function getIeDocumentElementOffset(/*Document?*/ doc){
+		module.getIeDocumentElementOffset = function getIeDocumentElementOffset(/*Document?*/ doc){
 			// summary:
 			//		returns the offset in x and y from the document body to the
 			//		visual edge of the page for IE
@@ -476,7 +476,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		};
 	}
 
-	geom.fixIeBiDiScrollLeft = function fixIeBiDiScrollLeft(/*Integer*/ scrollLeft, /*Document?*/ doc){
+	module.fixIeBiDiScrollLeft = function fixIeBiDiScrollLeft(/*Integer*/ scrollLeft, /*Document?*/ doc){
 		// summary:
 		//		In RTL direction, scrollLeft should be a negative value, but IE
 		//		returns a positive one. All codes using documentElement.scrollLeft
@@ -494,7 +494,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 
 		doc = doc || win.doc;
 		var ie = has("ie");
-		if(ie && !geom.isBodyLtr(doc)){
+		if(ie && !module.isBodyLtr(doc)){
 			var qk = has("quirks"),
 				de = qk ? win.body(doc) : doc.documentElement,
 				pwin = win.global;	// TODO: use winUtils.get(doc) after resolving circular dependency b/w dom-geometry.js and dojo/window.js
@@ -506,7 +506,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		return scrollLeft; // Integer
 	};
 
-	geom.position = function(/*DomNode*/ node, /*Boolean?*/ includeScroll){
+	module.position = function(/*DomNode*/ node, /*Boolean?*/ includeScroll){
 		// summary:
 		//		Gets the position and size of the passed element relative to
 		//		the viewport (if includeScroll==false), or relative to the
@@ -531,7 +531,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 
 		if(has("ie") < 9){
 			// On IE<9 there's a 2px offset that we need to adjust for, see dojo.getIeDocumentElementOffset()
-			var offset = geom.getIeDocumentElementOffset(node.ownerDocument);
+			var offset = module.getIeDocumentElementOffset(node.ownerDocument);
 
 			// fixes the position in IE, quirks mode
 			ret.x -= offset.x + (has("quirks") ? db.clientLeft + db.offsetLeft : 0);
@@ -542,7 +542,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		// if offsetParent is used, ret value already includes scroll position
 		// so we may have to actually remove that value if !includeScroll
 		if(includeScroll){
-			var scroll = geom.docScroll(node.ownerDocument);
+			var scroll = module.docScroll(node.ownerDocument);
 			ret.x += scroll.x;
 			ret.y += scroll.y;
 		}
@@ -552,7 +552,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 
 	// random "private" functions wildly used throughout the toolkit
 
-	geom.getMarginSize = function getMarginSize(/*DomNode*/ node, /*Object*/ computedStyle){
+	module.getMarginSize = function getMarginSize(/*DomNode*/ node, /*Object*/ computedStyle){
 		// summary:
 		//		returns an object that encodes the width and height of
 		//		the node's margin box
@@ -566,7 +566,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		//		object of dojo/dom-style.getComputedStyle().
 
 		node = dom.byId(node);
-		var me = geom.getMarginExtents(node, computedStyle || style.getComputedStyle(node));
+		var me = module.getMarginExtents(node, computedStyle || style.getComputedStyle(node));
 		var size = node.getBoundingClientRect();
 		return {
 			w: (size.right - size.left) + me.w,
@@ -574,7 +574,7 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 		};
 	};
 
-	geom.normalizeEvent = function(event){
+	module.normalizeEvent = function(event){
 		// summary:
 		//		Normalizes the geometry of a DOM event, normalizing the pageX, pageY,
 		//		offsetX, offsetY, layerX, and layerX properties
@@ -593,13 +593,13 @@ define(["./sniff", "./_base/window","./dom", "./dom-style"],
 			// DO NOT replace the following to use dojo.body(), in IE, document.documentElement should be used
 			// here rather than document.body
 			var docBody = has("quirks") ? doc.body : doc.documentElement;
-			var offset = geom.getIeDocumentElementOffset(doc);
-			event.pageX = event.clientX + geom.fixIeBiDiScrollLeft(docBody.scrollLeft || 0, doc) - offset.x;
+			var offset = module.getIeDocumentElementOffset(doc);
+			event.pageX = event.clientX + module.fixIeBiDiScrollLeft(docBody.scrollLeft || 0, doc) - offset.x;
 			event.pageY = event.clientY + (docBody.scrollTop || 0) - offset.y;
 		}
 	};
 
 	// TODO: evaluate separate getters/setters for position and sizes?
 
-	return geom;
+	return module;
 });
