@@ -1,4 +1,4 @@
-define(["./dom"], function(dom){
+define(["./main"], function(dom){
 	// module:
 	//		dojo/dom-class
 

@@ -1,4 +1,4 @@
-define(["heya-has/sniff", "./dom", "./style", "./prop"],
+define(["heya-has/sniff", "./main", "./style", "./prop"],
 		function(has, dom, style, prop){
 	// module:
 	//		dojo/dom-attr

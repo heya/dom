@@ -24,7 +24,7 @@ define(["heya-has/sniff", "./window", "./main", "./prop"],
 		},
 		reTag = /<\s*([\w\:]+)/,
 		masterNode = {}, masterNum = 0,
-		masterName = "__" + dojo._scopeName + "ToDomId";
+		masterName = "__ToDomId";
 
 	// generate start/end tag strings to use
 	// for the injection for each special tag wrap case.
