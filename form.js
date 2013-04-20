@@ -1,6 +1,9 @@
-define(["./_base/lang", "./dom", "./io-query", "./json"], function(lang, dom, ioq, json){
+define(["./main"], function(dom){
 	// module:
 	//		dojo/dom-form
+
+	//TODO: add real ioq
+	var ioq = {objectToQuery: function(){}};
 
     function setValue(/*Object*/ obj, /*String*/ name, /*String*/ value){
         // summary:
@@ -16,7 +19,7 @@ define(["./_base/lang", "./dom", "./io-query", "./json"], function(lang, dom, io
         var val = obj[name];
         if(typeof val == "string"){ // inline'd type check
             obj[name] = [val, value];
-        }else if(lang.isArray(val)){
+        }else if(val instanceof Array){
             val.push(value);
         }else{
             obj[name] = value;
@@ -25,7 +28,7 @@ define(["./_base/lang", "./dom", "./io-query", "./json"], function(lang, dom, io
 
 	var exclude = "file|submit|image|reset|button";
 
-	var form = {
+	var module = {
 		// summary:
 		//		This module defines form-processing functions.
 
@@ -114,7 +117,7 @@ define(["./_base/lang", "./dom", "./io-query", "./json"], function(lang, dom, io
 			for(var i = 0, l = elems.length; i < l; ++i){
 				var item = elems[i], _in = item.name, type = (item.type || "").toLowerCase();
 				if(_in && type && exclude.indexOf(type) < 0 && !item.disabled){
-					setValue(ret, _in, form.fieldToObject(item));
+					setValue(ret, _in, module.fieldToObject(item));
 					if(type == "image"){
 						ret[_in + ".x"] = ret[_in + ".y"] = ret[_in].x = ret[_in].y = 0;
 					}
@@ -130,7 +133,7 @@ define(["./_base/lang", "./dom", "./io-query", "./json"], function(lang, dom, io
 			// formNode: DOMNode|String
 			// returns: String
 
-			return ioq.objectToQuery(form.toObject(formNode)); // String
+			return ioq.objectToQuery(module.toObject(formNode)); // String
 		},
 
 		toJson: function formToJson(/*DOMNode|String*/ formNode, /*Boolean?*/ prettyPrint){
@@ -141,9 +144,11 @@ define(["./_base/lang", "./dom", "./io-query", "./json"], function(lang, dom, io
 			// prettyPrint: Boolean?
 			// returns: String
 
-			return json.stringify(form.toObject(formNode), null, prettyPrint ? 4 : 0); // String
+			return JSON.stringify(module.toObject(formNode), null,
+				typeof prettyPrint == "number" ? prettyPrint :
+				prettyPrint ? 4 : 0); // String
 		}
 	};
 
-    return form;
+    return module;
 });
