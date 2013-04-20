@@ -40,7 +40,7 @@ define(["heya-has/sniff", "./window"], function(has, win){
 				// if more than 1, choose first with the correct id
 				var i = 0;
 				while((te = eles[i++])){
-					if((te.attributes && te.attributes.id && te.attributes.id.value == id) || te.id == id){
+					if(te.attributes && te.attributes.id && te.attributes.id.value == id || te.id == id){
 						return te;
 					}
 				}
@@ -50,7 +50,7 @@ define(["heya-has/sniff", "./window"], function(has, win){
 		module.byId = function(id, doc){
 			// inline'd type check.
 			// be sure to return null per documentation, to match IE branch.
-			return ((typeof id == "string") ? (doc || win.doc).getElementById(id) : id) || null; // DOMNode
+			return (typeof id == "string" ? (doc || win.doc).getElementById(id) : id) || null; // DOMNode
 		};
 	}
 	/*=====

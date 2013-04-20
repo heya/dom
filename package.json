@@ -12,19 +12,15 @@
   "devDependencies": {
     "heya-unit": ">=0.1"
   },
-  "scripts": {
-    "test": "node tests/tests.js"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/heya/dom.git"
   },
   "keywords": [
-    "code generation",
-    "code construction",
-    "templating",
-    "templates",
-    "template"
+    "DOM",
+    "CSS class",
+    "style",
+    "geometry"
   ],
   "author": "Eugene Lazutkin <eugene.lazutkin@gmail.com> (http://lazutkin.com/)",
   "license": "BSD"

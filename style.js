@@ -1,4 +1,4 @@
-define(["heya-has/sniff", "./mini"], function(has, dom){
+define(["heya-has/sniff", "./main"], function(has, dom){
 	// module:
 	//		dojo/dom-style
 
