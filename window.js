@@ -1,4 +1,4 @@
-define(["heya-has/sniff", "./dom", "./dom-geometry", "./dom-style", "./dom-construct"],
+define(["heya-has/sniff", "./main", "./geometry", "./style", "./construct"],
 	function(has, dom, geom, style, domConstruct){
 
 	// feature detection
