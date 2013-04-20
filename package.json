@@ -6,7 +6,9 @@
   "directories": {
     "test": "tests"
   },
-  "dependencies": {},
+  "dependencies": {
+    "heya-has": ">=0.1"
+  },
   "devDependencies": {
     "heya-unit": ">=0.1"
   },
