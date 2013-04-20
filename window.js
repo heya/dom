@@ -1,10 +1,10 @@
-define(["./_base/lang", "./sniff", "./_base/window", "./dom", "./dom-geometry", "./dom-style", "./dom-construct"],
-	function(lang, has, baseWindow, dom, geom, style, domConstruct){
+define(["heya-has/sniff", "./dom", "./dom-geometry", "./dom-style", "./dom-construct"],
+	function(has, dom, geom, style, domConstruct){
 
 	// feature detection
 	/* not needed but included here for future reference
 	has.add("rtl-innerVerticalScrollBar-on-left", function(win, doc){
-		var	body = baseWindow.body(doc),
+		var	body = module.body(doc),
 			scrollable = domConstruct.create('div', {
 				style: {overflow:'scroll', overflowX:'hidden', direction:'rtl', visibility:'hidden', position:'absolute', left:'0', width:'64px', height:'64px'}
 			}, body, "last"),
@@ -23,8 +23,9 @@ define(["./_base/lang", "./sniff", "./_base/window", "./dom", "./dom-geometry", 
 		return ret;
 	});
 	*/
+
 	has.add("rtl-adjust-position-for-verticalScrollBar", function(win, doc){
-		var	body = baseWindow.body(doc),
+		var	body = module.body(doc),
 			scrollable = domConstruct.create('div', {
 				style: {overflow:'scroll', overflowX:'visible', direction:'rtl', visibility:'hidden', position:'absolute', left:'0', top:'0', width:'64px', height:'64px'}
 			}, body, "last"),
@@ -39,7 +40,7 @@ define(["./_base/lang", "./sniff", "./_base/window", "./dom", "./dom-geometry", 
 
 	has.add("position-fixed-support", function(win, doc){
 		// IE6, IE7+quirks, and some older mobile browsers don't support position:fixed
-		var	body = baseWindow.body(doc),
+		var	body = module.body(doc),
 			outer = domConstruct.create('span', {
 				style: {visibility:'hidden', position:'fixed', left:'1px', top:'1px'}
 			}, body, "last"),
@@ -55,7 +56,131 @@ define(["./_base/lang", "./sniff", "./_base/window", "./dom", "./dom-geometry", 
 	// module:
 	//		dojo/window
 
-	var window = {
+	var module = {
+
+		// summary:
+		//		API to save/set/restore the global/document scope.
+
+		global: this,
+		/*=====
+		 global: {
+			 // summary:
+			 //		Alias for the current window. 'global' can be modified
+			 //		for temporary context shifting. See also withGlobal().
+			 // description:
+			 //		Use this rather than referring to 'window' to ensure your code runs
+			 //		correctly in managed contexts.
+		 },
+		 =====*/
+
+		doc: this["document"] || null,
+		/*=====
+		doc: {
+			// summary:
+			//		Alias for the current document. 'doc' can be modified
+			//		for temporary context shifting. See also withDoc().
+			// description:
+			//		Use this rather than referring to 'window.document' to ensure your code runs
+			//		correctly in managed contexts.
+			// example:
+			//	|	n.appendChild(dojo.doc.createElement('div'));
+		},
+		=====*/
+
+		body: function(/*Document?*/ doc){
+			// summary:
+			//		Return the body element of the specified document or of dojo/_base/window::doc.
+			// example:
+			//	|	win.body().appendChild(dojo.doc.createElement('div'));
+
+			// Note: document.body is not defined for a strict xhtml document
+			// Would like to memoize this, but dojo.doc can change vi dojo.withDoc().
+			doc = doc || dojo.doc;
+			return doc.body || doc.getElementsByTagName("body")[0]; // Node
+		},
+
+		setContext: function(/*Object*/ globalObject, /*DocumentElement*/ globalDocument){
+			// summary:
+			//		changes the behavior of many core Dojo functions that deal with
+			//		namespace and DOM lookup, changing them to work in a new global
+			//		context (e.g., an iframe). The varibles dojo.global and dojo.doc
+			//		are modified as a result of calling this function and the result of
+			//		`dojo.body()` likewise differs.
+			module.global = globalObject;
+			module.doc = globalDocument;
+		},
+
+		withGlobal: function(	/*Object*/ globalObject,
+								/*Function*/ callback,
+								/*Object?*/ thisObject,
+								/*Array?*/ cbArguments){
+			// summary:
+			//		Invoke callback with globalObject as dojo.global and
+			//		globalObject.document as dojo.doc.
+			// description:
+			//		Invoke callback with globalObject as dojo.global and
+			//		globalObject.document as dojo.doc. If provided, globalObject
+			//		will be executed in the context of object thisObject
+			//		When callback() returns or throws an error, the dojo.global
+			//		and dojo.doc will be restored to its previous state.
+
+			var oldGlob = module.global;
+			try{
+				module.global = globalObject;
+				return module.withDoc.call(null, globalObject.document, callback, thisObject, cbArguments);
+			}finally{
+				module.global = oldGlob;
+			}
+		},
+
+		withDoc: function(	/*DocumentElement*/ documentObject,
+							/*Function*/ callback,
+							/*Object?*/ thisObject,
+							/*Array?*/ cbArguments){
+			// summary:
+			//		Invoke callback with documentObject as dojo/_base/window::doc.
+			// description:
+			//		Invoke callback with documentObject as dojo/_base/window::doc. If provided,
+			//		callback will be executed in the context of object thisObject
+			//		When callback() returns or throws an error, the dojo/_base/window::doc will
+			//		be restored to its previous state.
+
+			var oldDoc = module.doc,
+				oldQ = has("quirks"),
+				oldIE = has("ie"), isIE, mode, pwin;
+
+			try{
+				module.doc = documentObject;
+				// update dojo.isQuirks and the value of the has feature "quirks".
+				// remove setting dojo.isQuirks and dojo.isIE for 2.0
+				module.isQuirks = has.add("quirks", module.doc.compatMode == "BackCompat", true, true); // no need to check for QuirksMode which was Opera 7 only
+
+				if(has("ie")){
+					if((pwin = documentObject.parentWindow) && pwin.navigator){
+						// re-run IE detection logic and update dojo.isIE / has("ie")
+						// (the only time parentWindow/navigator wouldn't exist is if we were not
+						// passed an actual legitimate document object)
+						isIE = parseFloat(pwin.navigator.appVersion.split("MSIE ")[1]) || undefined;
+						mode = documentObject.documentMode;
+						if(mode && mode != 5 && Math.floor(isIE) != mode){
+							isIE = mode;
+						}
+						module.isIE = has.add("ie", isIE, true, true);
+					}
+				}
+
+				if(thisObject && typeof callback == "string"){
+					callback = thisObject[callback];
+				}
+
+				return callback.apply(thisObject, cbArguments || []);
+			}finally{
+				module.doc = oldDoc;
+				module.isQuirks = has.add("quirks", oldQ, true, true);
+				module.isIE = has.add("ie", oldIE, true, true);
+			}
+		}
+
 		// summary:
 		//		TODOC
 
@@ -63,16 +188,16 @@ define(["./_base/lang", "./sniff", "./_base/window", "./dom", "./dom-geometry", 
 			// summary:
 			//		Returns the dimensions and scroll position of the viewable area of a browser window
 
-			doc = doc || baseWindow.doc;
+			doc = doc || module.doc;
 
 			var
-				scrollRoot = (doc.compatMode == 'BackCompat') ? baseWindow.body(doc) : doc.documentElement,
+				scrollRoot = (doc.compatMode == 'BackCompat') ? module.body(doc) : doc.documentElement,
 				// get scroll position
 				scroll = geom.docScroll(doc), // scrollRoot.scrollTop/Left should work
 				w, h;
 
 			if(has("touch")){ // if(scrollbars not supported)
-				var uiWindow = window.get(doc);   // use UI window, not dojo.global window
+				var uiWindow = module.get(doc);   // use UI window, not dojo.global window
 				// on mobile, scrollRoot.clientHeight <= uiWindow.innerHeight <= scrollRoot.offsetHeight, return uiWindow.innerHeight
 				w = uiWindow.innerWidth || scrollRoot.clientWidth; // || scrollRoot.clientXXX probably never evaluated
 				h = uiWindow.innerHeight || scrollRoot.clientHeight;
@@ -100,7 +225,7 @@ define(["./_base/lang", "./sniff", "./_base/window", "./dom", "./dom-geometry", 
 			// reference to the real window object (maybe a copy), so we must fix it as well
 			// We use IE specific execScript to attach the real window reference to
 			// document._parentWindow for later use
-			if(has("ie") && window !== document.parentWindow){
+			if(has("ie") && module !== document.parentWindow){
 				/*
 				In IE 6, only the variable "window" can be used to connect events (others
 				may be only copies).
@@ -127,8 +252,8 @@ define(["./_base/lang", "./sniff", "./_base/window", "./dom", "./dom-geometry", 
 
 			try{ // catch unexpected/unrecreatable errors (#7808) since we can recover using a semi-acceptable native method
 				node = dom.byId(node);
-				var	doc = node.ownerDocument || baseWindow.doc,	// TODO: why baseWindow.doc?  Isn't node.ownerDocument always defined?
-					body = baseWindow.body(doc),
+				var	doc = node.ownerDocument || module.doc,	// TODO: why module.doc?  Isn't node.ownerDocument always defined?
+					body = module.body(doc),
 					html = doc.documentElement || body.parentNode,
 					isIE = has("ie"),
 					isWK = has("webkit");
@@ -223,7 +348,5 @@ define(["./_base/lang", "./sniff", "./_base/window", "./dom", "./dom-geometry", 
 		}
 	};
 
-	has("extend-dojo") && lang.setObject("dojo.window", window);
-
-	return window;
+	return module;
 });
