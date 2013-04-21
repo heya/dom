@@ -247,7 +247,7 @@ define(["heya-has/sniff", "./main"], function(has, dom){
 			return _getOpacity(n);
 		}
 		name = _floatAliases[name] ? "cssFloat" in n.style ? "cssFloat" : "styleFloat" : name;
-		var s = style.getComputedStyle(n);
+		var s = module.getComputedStyle(n);
 		return (l == 1) ? s : _toStyleValue(n, name, s[name] || n.style[name]); /* CSS2Properties||String||Number */
 	};
 
@@ -305,6 +305,7 @@ define(["heya-has/sniff", "./main"], function(has, dom){
 		for(var x in name){
 			module.set(node, x, name[x]);
 		}
+		//TODO: do we need to return anything?
 		return module.getComputedStyle(n);
 	};
 
