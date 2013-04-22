@@ -276,6 +276,115 @@ function(module, unit, win, dom, cls, style, prop,
 			eval(t.TEST("elem.firstChild.firstChild"));
 			eval(t.TEST("elem.firstChild.firstChild.data === 'Hello, world!'"));
 			win.body().removeChild(elem);
+		},
+		// geometry
+		function test_geometry(t){
+			var elem = ctr("p", {
+					style: {
+						padding: "1px 2px 3px 4px",
+						border: "solid black",
+						borderWidth: "5px 6px 7px 8px",
+						margin: "10px 20px 30px 40px"
+					}
+				}, win.body());
+			var box = geom.getPadExtents(elem);
+			eval(t.TEST("box.t === 1"));
+			eval(t.TEST("box.r === 2"));
+			eval(t.TEST("box.b === 3"));
+			eval(t.TEST("box.l === 4"));
+			eval(t.TEST("box.w === 6"));
+			eval(t.TEST("box.h === 4"));
+			box = geom.getBorderExtents(elem);
+			eval(t.TEST("box.t === 5"));
+			eval(t.TEST("box.r === 6"));
+			eval(t.TEST("box.b === 7"));
+			eval(t.TEST("box.l === 8"));
+			eval(t.TEST("box.w === 14"));
+			eval(t.TEST("box.h === 12"));
+			box = geom.getPadBorderExtents(elem);
+			eval(t.TEST("box.t === 6"));
+			eval(t.TEST("box.r === 8"));
+			eval(t.TEST("box.b === 10"));
+			eval(t.TEST("box.l === 12"));
+			eval(t.TEST("box.w === 20"));
+			eval(t.TEST("box.h === 16"));
+			box = geom.getMarginExtents(elem);
+			eval(t.TEST("box.t === 10"));
+			eval(t.TEST("box.r === 20"));
+			eval(t.TEST("box.b === 30"));
+			eval(t.TEST("box.l === 40"));
+			eval(t.TEST("box.w === 60"));
+			eval(t.TEST("box.h === 40"));
+
+			prop.set(elem, {
+				innerHTML: "Hello, world!",
+				style: {
+					position: "absolute",
+					top: "100px",
+					left: "200px",
+					padding: "0",
+					borderWidth: "0",
+					margin: "0"
+				}
+			});
+			var contentBox = geom.getContentBox(elem),
+				marginBox  = geom.getMarginBox(elem);
+			//eval(t.TEST("contentBox.t === marginBox.t"));
+			//eval(t.TEST("contentBox.l === marginBox.l"));
+			eval(t.TEST("contentBox.w === marginBox.w"));
+			eval(t.TEST("contentBox.h === marginBox.h"));
+
+			style.set(elem, {
+				padding: "1px 2px 3px 4px",
+				borderWidth: "5px 6px 7px 8px",
+				margin: "10px 20px 30px 40px"
+			});
+			box = geom.getContentBox(elem);
+			//eval(t.TEST("box.t === contentBox.t"));
+			//eval(t.TEST("box.l === contentBox.l"));
+			eval(t.TEST("box.w === contentBox.w"));
+			eval(t.TEST("box.h === contentBox.h"));
+			box = geom.getMarginBox(elem);
+			eval(t.TEST("box.t === marginBox.t"));
+			eval(t.TEST("box.l === marginBox.l"));
+			eval(t.TEST("box.w === marginBox.w + 2 + 6 + 20 + 4 + 8 + 40"));
+			eval(t.TEST("box.h === marginBox.h + 1 + 5 + 10 + 3 + 7 + 30"));
+
+			geom.setContentSize(elem, {w: 300, h: 400});
+			box = geom.getContentBox(elem);
+			//eval(t.TEST("box.t === 100"));
+			//eval(t.TEST("box.l === 200"));
+			eval(t.TEST("box.w === 300"));
+			eval(t.TEST("box.h === 400"));
+			box = geom.getMarginBox(elem);
+			eval(t.TEST("box.t === 100"));
+			eval(t.TEST("box.l === 200"));
+			eval(t.TEST("box.w === 300 + 2 + 6 + 20 + 4 + 8 + 40"));
+			eval(t.TEST("box.h === 400 + 1 + 5 + 10 + 3 + 7 + 30"));
+
+			geom.setMarginBox(elem, {t: 300, l: 400, w: 500, h: 600});
+			box = geom.getContentBox(elem);
+			//eval(t.TEST("box.t === 300"));
+			//eval(t.TEST("box.l === 400"));
+			eval(t.TEST("box.w === 500 - (2 + 6 + 20 + 4 + 8 + 40)"));
+			eval(t.TEST("box.h === 600 - (1 + 5 + 10 + 3 + 7 + 30)"));
+			box = geom.getMarginBox(elem);
+			eval(t.TEST("box.t === 300"));
+			eval(t.TEST("box.l === 400"));
+			eval(t.TEST("box.w === 500"));
+			eval(t.TEST("box.h === 600"));
+
+			box = geom.position(elem, true);
+			eval(t.TEST("box.x === 400 + 40"));
+			eval(t.TEST("box.y === 300 + 10"));
+			eval(t.TEST("box.w === 500 - 20 - 40"));
+			eval(t.TEST("box.h === 600 - 10 - 30"));
+
+			box = geom.getMarginSize(elem);
+			eval(t.TEST("box.w === 500"));
+			eval(t.TEST("box.h === 600"));
+
+			destroy(elem);
 		}
 	]);
 
