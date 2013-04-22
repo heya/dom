@@ -385,6 +385,61 @@ function(module, unit, win, dom, cls, style, prop,
 			eval(t.TEST("box.h === 600"));
 
 			destroy(elem);
+		},
+		// attr
+		function test_attr1(t){
+			// this function is a copy of test_prop(), it should work the same
+			var elem = win.doc.createElement("p");
+			elem.id = "abc";
+			win.body().appendChild(elem);
+			attr.set("abc", "class", "x y z");
+			eval(t.TEST("elem.className === 'x y z'"));
+			eval(t.TEST("attr.get(elem, 'className') === 'x y z'"));
+			eval(t.TEST("attr.get(elem, 'class') === 'x y z'"));
+			attr.set("abc", {
+				id: "def",
+				className: "a b c",
+			});
+			eval(t.TEST("elem.id === 'def'"));
+			eval(t.TEST("attr.get(elem, 'id') === 'def'"));
+			eval(t.TEST("elem.className === 'a b c'"));
+			eval(t.TEST("attr.get(elem, 'className') === 'a b c'"));
+			eval(t.TEST("attr.get(elem, 'class') === 'a b c'"));
+			attr.set(elem, "style", {
+				display: "block",
+				visibility: "visible"
+			});
+			eval(t.TEST("style.get(elem, 'display') === 'block'"));
+			eval(t.TEST("style.get(elem, 'visibility') === 'visible'"));
+			attr.set(elem, "innerHTML", "<span>Hello, world!</span>");
+			eval(t.TEST("elem.firstChild"));
+			eval(t.TEST("elem.firstChild === elem.lastChild"));
+			eval(t.TEST("elem.firstChild.tagName.toLowerCase() === 'span'"));
+			eval(t.TEST("elem.firstChild.firstChild"));
+			eval(t.TEST("elem.firstChild.firstChild.data === 'Hello, world!'"));
+			win.body().removeChild(elem);
+		},
+		function test_attr2(t){
+			var elem = win.doc.createElement("p");
+			elem.id = "abc";
+			win.body().appendChild(elem);
+			eval(t.TEST("!attr.has(elem, 'qwerty')"));
+			attr.set("abc", "qwerty", "x y z");
+			eval(t.TEST("!elem.qwerty"));
+			eval(t.TEST("elem.getAttribute('qwerty') === 'x y z'"));
+			eval(t.TEST("attr.has(elem, 'qwerty')"));
+			eval(t.TEST("attr.get(elem, 'qwerty') === 'x y z'"));
+			attr.set(elem, "qwerty", "a b c");
+			eval(t.TEST("!elem.qwerty"));
+			eval(t.TEST("elem.getAttribute('qwerty') === 'a b c'"));
+			eval(t.TEST("attr.has(elem, 'qwerty')"));
+			eval(t.TEST("attr.get(elem, 'qwerty') === 'a b c'"));
+			attr.remove(elem, "qwerty");
+			eval(t.TEST("!elem.qwerty"));
+			eval(t.TEST("elem.getAttribute('qwerty') === null"));
+			eval(t.TEST("!attr.has(elem, 'qwerty')"));
+			eval(t.TEST("attr.get(elem, 'qwerty') === null"));
+			win.body().removeChild(elem);
 		}
 	]);
 
