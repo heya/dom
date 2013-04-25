@@ -1,5 +1,5 @@
 define(["module", "heya-unit", "../window", "../dom", "../class", "../style", "../prop",
-	"../destroy", "../place", "../toDom", "../construct",
+	"../destroy", "../place", "../toDom", "../create",
 	"../geometry", "../attr", "../winutils", "../domutils"],
 function(module, unit, win, dom, cls, style, prop,
 	destroy, place, toDom, ctr,

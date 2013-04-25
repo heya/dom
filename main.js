@@ -1,5 +1,5 @@
 define(["./dom", "./class", "./style", "./prop", "./destroy", "./geometry",
-	"./toDom", "./place", "./construct", "./window"],
+	"./toDom", "./place", "./create", "./window"],
 function(dom, cls, style, prop, destroy, geom, toDom, place, create, win){
 	var module = {
 			toDom: toDom, place: place, create: create,

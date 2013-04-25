@@ -1,5 +1,5 @@
 define(["heya-has/sniff", "./window", "./dom", "./geometry",
-	"./style", "./construct"],
+	"./style", "./create"],
 function(has, winmod, dom, geom, style, ctr){
 
 	// feature detection
