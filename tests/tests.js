@@ -1,5 +1,4 @@
-/* UMD.define */ (typeof define=="function"&&define||function(d,f,m){m={module:module,require:require};module.exports=f.apply(null,d.map(function(n){return m[n]||require(n)}))})
-(["module", "heya-unit", "../window", "../dom", "../class", "../style", "../prop",
+define(["module", "heya-unit", "../window", "../dom", "../class", "../style", "../prop",
 	"../destroy", "../place", "../toDom", "../construct",
 	"../geometry", "../attr", "../winutils", "../domutils"],
 function(module, unit, win, dom, cls, style, prop,
@@ -25,7 +24,7 @@ function(module, unit, win, dom, cls, style, prop,
 			eval(t.TEST("win.global === window"));
 			eval(t.TEST("win.doc === document"));
 		},
-		// dom AKA main
+		// dom
 		function test_dom(t){
 			eval(t.TEST("!dom.byId('abc')"));
 			var elem = win.doc.createElement("p");
