@@ -1,5 +1,5 @@
 /* UMD.define */ (typeof define=="function"&&define||function(d,f,m){m={module:module,require:require};module.exports=f.apply(null,d.map(function(n){return m[n]||require(n)}))})
-(["module", "heya-unit", "../window", "../main", "../class", "../style", "../prop",
+(["module", "heya-unit", "../window", "../dom", "../class", "../style", "../prop",
 	"../destroy", "../place", "../toDom", "../construct",
 	"../geometry", "../attr", "../winutils", "../domutils"],
 function(module, unit, win, dom, cls, style, prop,

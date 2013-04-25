@@ -1,4 +1,4 @@
-define(["heya-has/sniff", "./window", "./main", "./style"],
+define(["heya-has/sniff", "./window", "./dom", "./style"],
 		function(has, win, dom, style){
 	// module:
 	//		dojo/dom-geometry

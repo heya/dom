@@ -1,4 +1,4 @@
-define(["heya-has/sniff", "./main", "./style", "./destroy", "./toDom"],
+define(["heya-has/sniff", "./dom", "./style", "./destroy", "./toDom"],
 		function(has, dom, style, destroy, toDom){
 	// module:
 	//		dojo/dom-prop

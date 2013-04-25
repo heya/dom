@@ -1,4 +1,4 @@
-define(["heya-has/sniff", "./main", "./toDom", "./destroy"],
+define(["heya-has/sniff", "./dom", "./toDom", "./destroy"],
 		function(has, dom, toDom, destroy){
 	// module:
 	//		dojo/dom-construct

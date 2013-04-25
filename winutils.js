@@ -1,4 +1,4 @@
-define(["heya-has/sniff", "./window", "./main", "./geometry",
+define(["heya-has/sniff", "./window", "./dom", "./geometry",
 	"./style", "./construct"],
 function(has, winmod, dom, geom, style, ctr){
 
