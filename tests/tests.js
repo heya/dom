@@ -1,9 +1,9 @@
 define(["module", "heya-unit", "../window", "../dom", "../class", "../style", "../prop",
-	"../destroy", "../place", "../toDom", "../create",
-	"../geometry", "../attr", "../winutils", "../domutils"],
+	"../destroy", "../place", "../toDom", "../create", "../geometry",
+	"../attr", "../winutils", "../domutils", "../select"],
 function(module, unit, win, dom, cls, style, prop,
-	destroy, place, toDom, ctr,
-	geom, attr, winutils, domutils){
+	destroy, place, toDom, ctr, geom,
+	attr, winutils, domutils, select){
 	"use strict";
 
 	// tests
@@ -439,6 +439,55 @@ function(module, unit, win, dom, cls, style, prop,
 			eval(t.TEST("!attr.has(elem, 'qwerty')"));
 			eval(t.TEST("attr.get(elem, 'qwerty') === null"));
 			win.body().removeChild(elem);
+		},
+		// select
+		function test_select(t){
+			ctr("p", {id: "p1", className: "p"}, win.body());
+			ctr("p", {id: "p2", className: "p"}, win.body());
+			ctr("span", {id: "s1", className: "s"}, "p1");
+			ctr("span", {id: "s2", className: "s"}, "p2");
+
+			if(select.isQuerySelectorAvailable){
+				eval(t.TEST("select.querySelectorAll('.c').length == 0"));
+				eval(t.TEST("select.querySelectorAll('.p').length == 2"));
+				eval(t.TEST("select.querySelectorAll('.p').item(0).id === 'p1'"));
+				eval(t.TEST("select.querySelectorAll('.p').item(1).id === 'p2'"));
+				eval(t.TEST("select.querySelectorAll('.s').length == 2"));
+				eval(t.TEST("select.querySelectorAll('.s').item(0).id === 's1'"));
+				eval(t.TEST("select.querySelectorAll('.s').item(1).id === 's2'"));
+				eval(t.TEST("select.querySelector('.c') === null"));
+				eval(t.TEST("select.querySelector('.s').id === 's1'"));
+				eval(t.TEST("select.querySelector('.p').id === 'p1'"));
+			}
+
+			if(select.isFindAvailable){
+				eval(t.TEST("select.findAll('.c').length == 0"));
+				eval(t.TEST("select.findAll('.p').length == 2"));
+				eval(t.TEST("select.findAll('.p').item(0).id === 'p1'"));
+				eval(t.TEST("select.findAll('.p').item(1).id === 'p2'"));
+				eval(t.TEST("select.findAll('.s').length == 2"));
+				eval(t.TEST("select.findAll('.s').item(0).id === 's1'"));
+				eval(t.TEST("select.findAll('.s').item(1).id === 's2'"));
+				eval(t.TEST("select.find('.c') === null"));
+				eval(t.TEST("select.find('.s').id === 's1'"));
+				eval(t.TEST("select.find('.p').id === 'p1'"));
+			}
+
+			if(select.isMatchesAvailable){
+				eval(t.TEST("select.matches(win.body(), 'body')"));
+				eval(t.TEST("select.matches('p1', '#p1')"));
+				eval(t.TEST("select.matches('p1', 'p')"));
+				eval(t.TEST("select.matches('p1', '.p')"));
+
+				eval(t.TEST("!select.matches('p1', '.c')"));
+				eval(t.TEST("select.matches('p1', '.p')"));
+				eval(t.TEST("!select.matches('p1', '.s')"));
+				eval(t.TEST("!select.matches('s1', '.c')"));
+				eval(t.TEST("!select.matches('s1', '.p')"));
+				eval(t.TEST("select.matches('s1', '.s')"));
+			}
+
+			destroy.empty(win.body());
 		}
 	]);
 

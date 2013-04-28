@@ -1,6 +1,6 @@
 {
   "name": "heya-dom",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "DOM: the venerable Dojo DOM utilities.",
   "main": "main.js",
   "directories": {
