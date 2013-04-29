@@ -42,7 +42,10 @@ define(["heya-has/sniff", "./window"],
 	if(has("ie") <= 8){
 		html5domfix = function(doc){
 			doc.__dojo_html5_tested = "yes";
-			var div = create('div', {innerHTML: "<nav>a</nav>", style: {visibility: "hidden"}}, doc.body);
+			var div = doc.createElement("div");
+			div.style.visibility = "hidden";
+			div.innerHTML = "<nav>a</nav>";
+			doc.documentElement.appendChild(div);
 			if(div.childNodes.length !== 1){
 				'abbr article aside audio canvas details figcaption figure footer header ' +
 				'hgroup mark meter nav output progress section summary time video'.replace(
@@ -51,7 +54,7 @@ define(["heya-has/sniff", "./window"],
 					}
 				);
 			}
-			destroy(div);
+			doc.documentElement.removeChild(div);
 		};
 	}
 
