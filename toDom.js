@@ -47,8 +47,8 @@ define(["heya-has/sniff", "./window"],
 			div.innerHTML = "<nav>a</nav>";
 			doc.documentElement.appendChild(div);
 			if(div.childNodes.length !== 1){
-				'abbr article aside audio canvas details figcaption figure footer header ' +
-				'hgroup mark meter nav output progress section summary time video'.replace(
+				('abbr article aside audio canvas details figcaption figure footer header ' +
+				'hgroup mark meter nav output progress section summary time video').replace(
 					/\b\w+\b/g, function(n){
 						doc.createElement(n);
 					}
