@@ -32,6 +32,24 @@ define([], function () {
 	}
 
 
+	function setAttributes (node, attributes) {
+		var attrKeys = Object.keys(attributes);
+		for (var i = 0; i < attrKeys.length; ++i) {
+			var key = attrKeys[i];
+			if (key === '$') {
+				setProperties(node, attributes.$);
+			} else {
+				var name = parseName.exec(key);
+				if (name) {
+					node.setAttributeNS(namespaces[name[1]], name[2], attributes[key]);
+				} else {
+					node.setAttribute(key, attributes[key]);
+				}
+			}
+		}
+	}
+
+
 	function buildElement (tag, attributes, ns) {
 		// create an element
 		var name = parseName.exec(tag), node;
@@ -43,22 +61,8 @@ define([], function () {
 			node = document.createElement(tag);
 		}
 
-		// process attributes
 		if (attributes) {
-			var attrKeys = Object.keys(attributes);
-			for (var i = 0; i < attrKeys.length; ++i) {
-				var key = attrKeys[i];
-				if (key === '$') {
-					setProperties(node, attributes.$);
-				} else {
-					name  = parseName.exec(key);
-					if (name) {
-						node.setAttributeNS(namespaces[name[1]], name[2], attributes[key]);
-					} else {
-						node.setAttribute(key, attributes[key]);
-					}
-				}
-			}
+			setAttributes(node, attributes);
 		}
 
 		return node;
@@ -155,6 +159,7 @@ define([], function () {
 
 	build.text     = buildText;
 	build.element  = buildElement;
+	build.setAttrs = setAttributes;
 	build.setProps = setProperties;
 	build.setStyle = setStyle;
 
