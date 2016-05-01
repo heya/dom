@@ -16,6 +16,7 @@ define([], function () {
 			var key = styleKeys[i];
 			node.style[key] = styles[key];
 		}
+		return node;
 	}
 
 
@@ -29,6 +30,7 @@ define([], function () {
 				node[key] = props[key];
 			}
 		}
+		return node;
 	}
 
 
@@ -47,6 +49,7 @@ define([], function () {
 				}
 			}
 		}
+		return node;
 	}
 
 
