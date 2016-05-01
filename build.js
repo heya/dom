@@ -10,6 +10,28 @@ define([], function () {
 		parseName = /^(\w+)\:(.+)$/;
 
 
+	function setStyle (node, styles) {
+		var styleKeys = Object.keys(styles);
+		for (var i = 0; i < styleKeys.length; ++i) {
+			var key = styleKeys[i];
+			node.style[key] = styles[key];
+		}
+	}
+
+
+	function setProperties (node, props) {
+		var propKeys = Object.keys(props);
+		for (var i = 0; i < propKeys.length; ++i) {
+			var key = propKeys[i];
+			if (key === 'style') {
+				setStyle(node, props.style);
+			} else {
+				node[key] = props[key];
+			}
+		}
+	}
+
+
 	function buildElement (tag, attributes, ns) {
 		// create an element
 		var name = parseName.exec(tag), node;
@@ -27,21 +49,7 @@ define([], function () {
 			for (var i = 0; i < attrKeys.length; ++i) {
 				var key = attrKeys[i];
 				if (key === '$') {
-					// process properties
-					var props = attributes.$, propKeys = Object.keys(props);
-					for (var j = 0; j < propKeys.length; ++j) {
-						key = propKeys[j];
-						if (key === 'style') {
-							// process style
-							var styles = props.style, styleKeys = Object.keys(styles);
-							for (var k = 0; k < styleKeys.length; ++k) {
-								key = styleKeys[k];
-								node.style[key] = styles[key];
-							}
-						} else {
-							node[key] = props[key];
-						}
-					}
+					setProperties(node, attributes.$);
 				} else {
 					name  = parseName.exec(key);
 					if (name) {
@@ -145,8 +153,10 @@ define([], function () {
 		return node;
 	}
 
-	build.text    = buildText;
-	build.element = buildElement;
+	build.text     = buildText;
+	build.element  = buildElement;
+	build.setProps = setProperties;
+	build.setStyle = setStyle;
 
 	return build;
 });
