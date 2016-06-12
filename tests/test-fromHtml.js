@@ -9,6 +9,14 @@ define(["module", "heya-unit", "../fromHtml"], function (module, unit, fromHtml)
 			var div = document.createElement('div');
 			div.appendChild(node);
 			eval(t.TEST('div.innerHTML === "Hello!"'));
+		},
+		function test_mixed_text (t) {
+			var node = fromHtml('<span>Hello</span>, <span>world!</span>');
+			eval(t.TEST('node.nodeName == "#document-fragment"'));
+			eval(t.TEST('node.childNodes.length == 3'));
+			var div = document.createElement('div');
+			div.appendChild(node);
+			eval(t.TEST('div.innerHTML === "<span>Hello</span>, <span>world!</span>"'));
 		}
 	]);
 

@@ -72,6 +72,52 @@ define(["module", "heya-unit", "../build"], function (module, unit, build) {
 			eval(t.TEST('node.tagName === "DIV"'));
 			eval(t.TEST('node.attributes.length === 0'));
 			eval(t.TEST('node.innerHTML === "Hello, world!"'));
+		},
+		function test_parent (t) {
+			var div = document.createElement('div'),
+				node = build([['.a'], ['.b']], div);
+			eval(t.TEST('div === node'));
+			eval(t.TEST("div.innerHTML === '<div class=\"a\"></div><div class=\"b\"></div>'"));
+		},
+		function test_h (t) {
+			var h = build.h,
+				node = h('div#page',
+					  h('div#header',
+						h('h1.classy', {$: {style: {backgroundColor: '#22f'}}}, 'h')
+					),
+					h('div#menu', {$: {style: {backgroundColor: '#2f2'}}},
+						h('ul',
+							h('li', 'one'),
+							h('li', 'two'),
+							h('li', 'three')
+						)
+					),
+					h('h2', {$: {style: {backgroundColor: '#f22'}}}, 'content title'),
+					h('p', "so it's just like a templating engine,\n",
+						"but easy to use inline with javascript\n"),
+					h('p', "the intension is for this to be used to create\n",
+						"reusable, interactive html widgets. ")
+				);
+
+			eval(t.TEST('node.tagName === "DIV"'));
+			eval(t.TEST('node.id === "page"'));
+			eval(t.TEST('node.querySelector("#header").tagName === "DIV"'));
+			eval(t.TEST('node.querySelector("#menu").tagName === "DIV"'));
+			eval(t.TEST('node.querySelectorAll("p").length === 2'));
+
+			var h1 = node.querySelector('h1'), h2 = node.querySelector('h2');
+
+			eval(t.TEST('h1.classList.contains("classy")'));
+			eval(t.TEST('h1.innerHTML === "h"'));
+			eval(t.TEST('h2.innerHTML === "content title"'));
+			eval(t.TEST('h1.style.backgroundColor'));
+			eval(t.TEST('h2.style.backgroundColor'));
+
+			var li = node.querySelectorAll('ul li');
+			eval(t.TEST('li.length === 3'));
+			eval(t.TEST('li[0].innerHTML === "one"'));
+			eval(t.TEST('li[1].innerHTML === "two"'));
+			eval(t.TEST('li[2].innerHTML === "three"'));
 		}
 	]);
 

@@ -58,8 +58,8 @@ define([], function () {
 	}
 
 
-	function buildElement (tag, attributes, ns, doc) {
-		doc = doc || document;
+	function buildElement (tag, attributes, ns, doc, options) {
+		doc = doc || options && options.document || document;
 		// create an element
 		var name = parseName.exec(tag), node;
 
@@ -89,7 +89,7 @@ define([], function () {
 		}
 
 		if (attributes) {
-			setAttributes(node, attributes);
+			setAttributes(node, attributes, options);
 		}
 
 		return node;
@@ -100,7 +100,8 @@ define([], function () {
 	}
 
 	function build (vdom, mainParent, options) {
-		var doc = options && options.document || document,
+		var doc = options && options.document ||
+				mainParent && mainParent.ownerDocument || document,
 			stack = [mainParent, vdom, null], parent, node;
 
 		while (stack.length) {
@@ -141,7 +142,7 @@ define([], function () {
 			// make a node
 			if (typeof tag == 'string') {
 				// tag
-				node = buildElement(tag, null, ns);
+				node = buildElement(tag, null, ns, doc, options);
 				// set attributes
 				attributes = element[1];
 				from = 2;
