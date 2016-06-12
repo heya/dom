@@ -1,13 +1,6 @@
 define([], function () {
 	'use strict';
 
-	function insertBefore (node, ref) {
-		var parent = ref.parentNode;
-		if (parent) {
-			parent.insertBefore(node, ref);
-		}
-	}
-
 	function place (/*DOMNode*/ node, /*DOMNode*/ refNode, /*String|Number?*/ position) {
 		// summary:
 		//		Attempt to insert node into the DOM, choosing from various positioning options.
