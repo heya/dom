@@ -1,4 +1,5 @@
-define([], function () {
+(function(_,f,g){g=window;g=g.heya||(g.heya={});g=g.dom||(g.dom={});g.build=f();})
+([], function () {
 	'use strict';
 
 	var namespaces = {
