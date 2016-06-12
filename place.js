@@ -1,31 +1,14 @@
-define(["./dom", "./toDom", "./destroy"],
-		function(dom, toDom, destroy){
-	// module:
-	//		dojo/dom-construct
-	// summary:
-	//		This module defines the core dojo DOM construction API.
+define([], function () {
+	'use strict';
 
-	function _insertBefore(/*DomNode*/ node, /*DomNode*/ ref){
+	function insertBefore (node, ref) {
 		var parent = ref.parentNode;
-		if(parent){
+		if (parent) {
 			parent.insertBefore(node, ref);
 		}
 	}
 
-	function _insertAfter(/*DomNode*/ node, /*DomNode*/ ref){
-		// summary:
-		//		Try to insert node after ref
-		var parent = ref.parentNode;
-		if(parent){
-			if(parent.lastChild == ref){
-				parent.appendChild(node);
-			}else{
-				parent.insertBefore(node, ref.nextSibling);
-			}
-		}
-	}
-
-	return function place(/*DOMNode|String*/ node, /*DOMNode|String*/ refNode, /*String|Number?*/ position){
+	function place (/*DOMNode*/ node, /*DOMNode*/ refNode, /*String|Number?*/ position) {
 		// summary:
 		//		Attempt to insert node into the DOM, choosing from various positioning options.
 		//		Returns the first argument resolved to a DOM node.
@@ -64,42 +47,45 @@ define(["./dom", "./toDom", "./destroy"],
 		//		Put a new LI as the first child of a list by id:
 		//	|	dojo.place("<li></li>", "someUl", "first");
 
-		refNode = dom.byId(refNode);
-		if(typeof node == "string"){ // inline'd type check
-			node = /^\s*</.test(node) ? toDom(node, refNode.ownerDocument) : dom.byId(node);
-		}
-		if(typeof position == "number"){ // inline'd type check
-			var cn = refNode.childNodes;
-			if(!cn.length || cn.length <= position){
+		if (typeof position == 'number') { // inline'd type check
+			var children = refNode.childNodes;
+			if (!children.length || children.length <= position) {
 				refNode.appendChild(node);
-			}else{
-				_insertBefore(node, cn[position < 0 ? 0 : position]);
+			} else {
+				insertBefore(node, children[position < 0 ? 0 : position]);
 			}
-		}else{
-			switch(position){
-				case "before":
-					_insertBefore(node, refNode);
-					break;
-				case "after":
-					_insertAfter(node, refNode);
-					break;
-				case "replace":
-					refNode.parentNode.replaceChild(node, refNode);
-					break;
-				case "only":
-					destroy.empty(refNode);
-					refNode.appendChild(node);
-					break;
-				case "first":
-					if(refNode.firstChild){
-						_insertBefore(node, refNode.firstChild);
-						break;
-					}
-					// else fallthrough...
-				default: // aka: last
-					refNode.appendChild(node);
-			}
+			return node;
+		}
+
+		var parent = refNode.parentNode;
+		switch (position) {
+			case 'before':
+				if (parent) {
+					parent.insertBefore(node, refNode);
+				}
+				break;
+			case 'after':
+				if (parent) {
+					parent.insertBefore(node, refNode.nextSibling);
+				}
+				break;
+			case 'replace':
+				if (parent) {
+					parent.replaceChild(node, refNode);
+				}
+				break;
+			case "only":
+				refNode.innerHTML = '';
+				refNode.appendChild(node);
+				break;
+			case "first":
+				refNode.insertBefore(node, refNode.firstChild);
+				break;
+			default: // aka: last
+				refNode.appendChild(node);
 		}
 		return node; // DomNode
-	};
+	}
+
+	return place;
 });
