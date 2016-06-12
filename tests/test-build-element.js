@@ -23,8 +23,18 @@ define(["module", "heya-unit", "../build"], function (module, unit, build) {
 			eval(t.TEST('node.getAttribute("data-abc") === "12"'));
 			eval(t.TEST('node.innerHTML === "Hello!"'));
 		},
-		function test_div_style (t) {
-			var node = build.element('div', {$: {style: {fontWeight: 'bold'}}});
+		function test_div_style_string (t) {
+			var node = build.element('div', {$: {style: 'font-weight: bold'}});
+			eval(t.TEST('node.tagName === "DIV"'));
+			eval(t.TEST('node.style.fontWeight === "bold"'));
+		},
+		function test_div_style_set (t) {
+			var node = build.element('div', {$: {style: {'font-weight': 'bold'}}});
+			eval(t.TEST('node.tagName === "DIV"'));
+			eval(t.TEST('node.style.fontWeight === "bold"'));
+		},
+		function test_div_style_assign (t) {
+			var node = build.element('div', {$: {style: {$: {fontWeight: 'bold'}}}});
 			eval(t.TEST('node.tagName === "DIV"'));
 			eval(t.TEST('node.style.fontWeight === "bold"'));
 		},

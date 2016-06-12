@@ -11,11 +11,24 @@ define([], function () {
 		parseSelector = /[\.#][\w\-]+/g;
 
 
-	function setStyle (node, styles) {
+	function assignStyle (node, styles) {
 		var styleKeys = Object.keys(styles);
 		for (var i = 0; i < styleKeys.length; ++i) {
 			var key = styleKeys[i];
 			node.style[key] = styles[key];
+		}
+		return node;
+	}
+
+	function setStyle (node, styles) {
+		var styleKeys = Object.keys(styles);
+		for (var i = 0; i < styleKeys.length; ++i) {
+			var key = styleKeys[i];
+			if (key === '$') {
+				assignStyle(node, styles.$);
+			} else {
+				node.style.setProperty(key, styles[key]);
+			}
 		}
 		return node;
 	}
@@ -26,7 +39,11 @@ define([], function () {
 		for (var i = 0; i < propKeys.length; ++i) {
 			var key = propKeys[i];
 			if (key === 'style') {
-				setStyle(node, props.style);
+				if (typeof props.style == 'string') {
+					node.style.cssText = props.style;
+				} else {
+					setStyle(node, props.style);
+				}
 			} else {
 				node[key] = props[key];
 			}
@@ -221,12 +238,13 @@ define([], function () {
 		return parent;
 	}
 
-	build.text     = buildText;
-	build.element  = buildElement;
-	build.setAttrs = setAttributes;
-	build.setProps = setProperties;
-	build.setStyle = setStyle;
-	build.h        = hyperscript;
+	build.text        = buildText;
+	build.element     = buildElement;
+	build.setAttrs    = setAttributes;
+	build.setProps    = setProperties;
+	build.setStyle    = setStyle;
+	build.assignStyle = assignStyle;
+	build.h           = hyperscript;
 
 	return build;
 });

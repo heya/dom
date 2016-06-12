@@ -23,6 +23,13 @@ define(["module", "heya-unit", "../build"], function (module, unit, build) {
 			eval(t.TEST('node.getAttribute("data-abc") === "12"'));
 			eval(t.TEST('node.innerHTML === "Hello!"'));
 		},
+		function test_div_text_attr (t) {
+			var node = build(['div', 'Hello!', {'data-abc': 12}]);
+			eval(t.TEST('node.tagName === "DIV"'));
+			eval(t.TEST('node.attributes.length === 1'));
+			eval(t.TEST('node.getAttribute("data-abc") === "12"'));
+			eval(t.TEST('node.innerHTML === "Hello!"'));
+		},
 		function test_div_attr_text_manual (t) {
 			var node = build(['div', {'data-abc': 12}, document.createTextNode('Hello!')]);
 			eval(t.TEST('node.tagName === "DIV"'));
@@ -83,16 +90,16 @@ define(["module", "heya-unit", "../build"], function (module, unit, build) {
 			var h = build.h,
 				node = h('div#page',
 					  h('div#header',
-						h('h1.classy', 'h', {style: {backgroundColor: '#22f'}})
+						h('h1.classy', 'h', {style: {'background-color': '#22f'}})
 					),
-					h('div#menu', {style: {backgroundColor: '#2f2'}},
+					h('div#menu', {style: {'background-color': '#2f2'}},
 						h('ul',
 							h('li', 'one'),
 							h('li', 'two'),
 							h('li', 'three')
 						)
 					),
-					h('h2', 'content title', {style: {backgroundColor: '#f22'}}),
+					h('h2', 'content title', {style: {'background-color': '#f22'}}),
 					h('p', "so it's just like a templating engine,\n",
 						"but easy to use inline with javascript\n"),
 					h('p', "the intension is for this to be used to create\n",
