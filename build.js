@@ -195,13 +195,42 @@ define([], function () {
 		return parent || node;
 	}
 
-	// emulating hyperscript (see https://github.com/dominictarr/hyperscript)
+	// implementing hyperscript (see https://github.com/dominictarr/hyperscript)
 	function hyperscript (tag, attributes, children) {
-		var vdom = new Array(arguments.length);
-		for (var i = 0; i < vdom.length; ++i) {
-			vdom[i] = arguments[i];
+		var node = buildElement(tag), i, child;
+		for (i = 1; i < arguments.length; ++i) {
+			child = arguments[i];
+			if (!child) {
+				// ignore
+			} else if (typeof child == 'string') {
+				node.appendChild(document.createTextNode(child));
+			} else if (child instanceof Array) {
+				addToParent(node, child);
+			} else if (typeof child.appendChild == 'function') {
+				node.appendChild(child);
+			} else {
+				setProperties(node, child);
+			}
 		}
-		return build(vdom);
+		return node;
+	}
+
+	function addToParent (parent, children) {
+		for (var i = 0; i < children.length; ++i) {
+			var child = arguments[i];
+			if (!child) {
+				// ignore
+			} else if (typeof child == 'string') {
+				parent.appendChild(parent.ownerDocument.createTextNode(child));
+			} else if (child instanceof Array) {
+				addToParent(parent, child);
+			} else if (typeof child.appendChild == 'function') {
+				parent.appendChild(child);
+			} else {
+				setProperties(parent, child);
+			}
+		}
+		return parent;
 	}
 
 	build.text     = buildText;
