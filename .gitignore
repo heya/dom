@@ -1,6 +1,7 @@
-node_modules/*
 *.iml
 .idea
 *.sublime-*
 report/*
 coverage/*
+/bower_components/
+/node_modules/

@@ -1,16 +1,19 @@
 {
   "name": "heya-dom",
-  "version": "0.1.2",
-  "description": "DOM: the venerable Dojo DOM utilities.",
+  "version": "1.0.0",
+  "description": "DOM utilities.",
   "main": "main.js",
   "directories": {
     "test": "tests"
   },
-  "dependencies": {
-    "heya-has": ">=0.1"
+  "scripts": {
+    "test": "node_modules/.bin/phantomjs tests/phantom.js",
+    "dist": "node node_modules/heya-globalize/index.js"
   },
   "devDependencies": {
-    "heya-unit": ">=0.1"
+    "heya-globalize": "^1.0.3",
+    "heya-unit": ">=0.1",
+    "phantomjs-prebuilt": "^2.1.7"
   },
   "repository": {
     "type": "git",
@@ -19,9 +22,15 @@
   "keywords": [
     "DOM",
     "CSS class",
-    "style",
-    "geometry"
+    "style"
   ],
   "author": "Eugene Lazutkin <eugene.lazutkin@gmail.com> (http://lazutkin.com/)",
-  "license": "BSD"
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/heya/dom/issues"
+  },
+  "homepage": "https://github.com/heya/dom#readme",
+  "browserGlobals": {
+    "!root": "heya.dom"
+  }
 }
