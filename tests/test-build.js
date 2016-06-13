@@ -87,8 +87,10 @@ define(["module", "heya-unit", "../build"], function (module, unit, build) {
 			eval(t.TEST("div.innerHTML === '<div class=\"a\"></div><div class=\"b\"></div>'"));
 		},
 		function test_h (t) {
-			var h = build.h,
-				node = h('div#page',
+			var h = build.hyperscript;
+
+			// this test is taken verbatim from https://github.com/dominictarr/hyperscript#readme
+			var node = h('div#page',
 					  h('div#header',
 						h('h1.classy', 'h', {style: {'background-color': '#22f'}})
 					),

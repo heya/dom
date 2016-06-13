@@ -56,19 +56,33 @@ define([], function () {
 		var attrKeys = Object.keys(attributes);
 		for (var i = 0; i < attrKeys.length; ++i) {
 			var key = attrKeys[i];
-			if (key === '$') {
-				if (options && typeof options.setComponentProperties == 'function' && node.tagName.indexOf('-') > 0) {
-					options.setComponentProperties(node, attributes.$);
-				} else {
-					setProperties(node, attributes.$);
-				}
-			} else {
-				var name = parseName.exec(key);
-				if (name) {
-					node.setAttributeNS(namespaces[name[1]], name[2], attributes[key]);
-				} else {
-					node.setAttribute(key, attributes[key]);
-				}
+			switch (key) {
+				case '$':
+					if (options && typeof options.setComponentProperties == 'function' && node.tagName.indexOf('-') > 0) {
+						options.setComponentProperties(node, attributes.$);
+					} else {
+						setProperties(node, attributes.$);
+					}
+					break;
+				case 'style':
+					if (typeof attributes.style == 'string') {
+						node.style.cssText = attributes.style;
+					} else {
+						setStyle(node, attributes.style);
+					}
+					break;
+				case 'class':
+				case 'className':
+					node.className = attributes[key];
+					break;
+				default:
+					var name = parseName.exec(key);
+					if (name) {
+						node.setAttributeNS(namespaces[name[1]], name[2], attributes[key]);
+					} else {
+						node.setAttribute(key, attributes[key]);
+					}
+					break;
 			}
 		}
 		return node;
@@ -244,7 +258,7 @@ define([], function () {
 	build.setProps    = setProperties;
 	build.setStyle    = setStyle;
 	build.assignStyle = assignStyle;
-	build.h           = hyperscript;
+	build.hyperscript = hyperscript;
 
 	return build;
 });

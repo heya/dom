@@ -23,6 +23,21 @@ define(["module", "heya-unit", "../build"], function (module, unit, build) {
 			eval(t.TEST('node.getAttribute("data-abc") === "12"'));
 			eval(t.TEST('node.innerHTML === "Hello!"'));
 		},
+		function test_div_style_string_simple (t) {
+			var node = build.element('div', {style: 'font-weight: bold'});
+			eval(t.TEST('node.tagName === "DIV"'));
+			eval(t.TEST('node.style.fontWeight === "bold"'));
+		},
+		function test_div_style_set_simple (t) {
+			var node = build.element('div', {style: {'font-weight': 'bold'}});
+			eval(t.TEST('node.tagName === "DIV"'));
+			eval(t.TEST('node.style.fontWeight === "bold"'));
+		},
+		function test_div_style_assign_simple (t) {
+			var node = build.element('div', {style: {$: {fontWeight: 'bold'}}});
+			eval(t.TEST('node.tagName === "DIV"'));
+			eval(t.TEST('node.style.fontWeight === "bold"'));
+		},
 		function test_div_style_string (t) {
 			var node = build.element('div', {$: {style: 'font-weight: bold'}});
 			eval(t.TEST('node.tagName === "DIV"'));
@@ -42,6 +57,12 @@ define(["module", "heya-unit", "../build"], function (module, unit, build) {
 			var node = build.element('svg:path');
 			eval(t.TEST('node.tagName === "path"'));
 			eval(t.TEST('node.namespaceURI === "http://www.w3.org/2000/svg"'));
+		},
+		function test_className_simple (t) {
+			var node = build.element('div', {className: 'a b'});
+			eval(t.TEST('node.classList.length == 2'));
+			eval(t.TEST('node.classList.contains("a")'));
+			eval(t.TEST('node.classList.contains("b")'));
 		},
 		function test_className (t) {
 			var node = build.element('div', {$: {className: 'a b'}});
