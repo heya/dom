@@ -1,140 +1,21 @@
-(function(_,f,g){g=window;g=g.heya||(g.heya={});g=g.dom||(g.dom={});g.build=f();})
-([], function () {
+(function(_,f){window.heya.dom.build=f(window.heya.dom.create);})
+(['./create'], function (create) {
 	'use strict';
 
-	var namespaces = {
-			svg:   'http://www.w3.org/2000/svg',
-			xlink: 'http://www.w3.org/1999/xlink',
-			ev:    'http://www.w3.org/2001/xml-events',
-			xml:   'http://www.w3.org/XML/1998/namespace'
-		},
-		parseName = /^(?:(\w+)\:)?([\w\-]*)/,
-		parseSelector = /[\.#][\w\-]+/g;
+	var textTypes = {string: 1, number: 1, boolean: 1};
 
+	function build (vdom, parent, options) {
+		var doc = options && options.document || document,
+			stack = [parent, vdom, null], node;
 
-	function assignStyle (node, styles) {
-		var styleKeys = Object.keys(styles);
-		for (var i = 0; i < styleKeys.length; ++i) {
-			var key = styleKeys[i];
-			node.style[key] = styles[key];
-		}
-		return node;
-	}
-
-	function setStyle (node, styles) {
-		var styleKeys = Object.keys(styles);
-		for (var i = 0; i < styleKeys.length; ++i) {
-			var key = styleKeys[i];
-			if (key === '$') {
-				assignStyle(node, styles.$);
+		if (parent) {
+			if (parent.nodeType === 9) {
+				doc = parent;
+				parent = null;
 			} else {
-				node.style.setProperty(key, styles[key]);
+				doc = parent.ownerDocument || doc;
 			}
 		}
-		return node;
-	}
-
-
-	function setProperties (node, props) {
-		var propKeys = Object.keys(props);
-		for (var i = 0; i < propKeys.length; ++i) {
-			var key = propKeys[i];
-			if (key === 'style') {
-				if (typeof props.style == 'string') {
-					node.style.cssText = props.style;
-				} else {
-					setStyle(node, props.style);
-				}
-			} else {
-				node[key] = props[key];
-			}
-		}
-		return node;
-	}
-
-
-	function setAttributes (node, attributes, options) {
-		var attrKeys = Object.keys(attributes);
-		for (var i = 0; i < attrKeys.length; ++i) {
-			var key = attrKeys[i];
-			switch (key) {
-				case '$':
-					if (options && typeof options.setComponentProperties == 'function' && node.tagName.indexOf('-') > 0) {
-						options.setComponentProperties(node, attributes.$);
-					} else {
-						setProperties(node, attributes.$);
-					}
-					break;
-				case 'style':
-					if (typeof attributes.style == 'string') {
-						node.style.cssText = attributes.style;
-					} else {
-						setStyle(node, attributes.style);
-					}
-					break;
-				case 'class':
-				case 'className':
-					node.className = attributes[key];
-					break;
-				default:
-					var name = parseName.exec(key);
-					if (name) {
-						node.setAttributeNS(namespaces[name[1]], name[2], attributes[key]);
-					} else {
-						node.setAttribute(key, attributes[key]);
-					}
-					break;
-			}
-		}
-		return node;
-	}
-
-
-	function buildElement (tag, attributes, ns, doc, options) {
-		doc = doc || options && options.document || document;
-		// create an element
-		var name = parseName.exec(tag), node;
-
-		if (name) {
-			ns = name[1] || ns;
-			if (ns) {
-				node = doc.createElementNS(namespaces[ns], name[2] || 'div');
-			} else {
-				node = doc.createElement(name[2] || 'div');
-			}
-			if (name[0].length < tag.length) {
-				// add selector's classes and ids
-				tag.substring(name[0].length).replace(parseSelector, function (match) {
-					switch (match.charAt(0)) {
-						case '.':
-							node.classList.add(match.substring(1));
-							break;
-						case '#':
-							node.id = match.substring(1);
-							break;
-					}
-					return '';
-				});
-			}
-		} else {
-			node = doc.createElement(tag);
-		}
-
-		if (attributes) {
-			setAttributes(node, attributes, options);
-		}
-
-		return node;
-	}
-
-	function buildText (text, doc) {
-		return (doc || document).createTextNode(text);
-	}
-
-	function build (vdom, mainParent, options) {
-		var doc = options && options.document ||
-				mainParent && mainParent.ownerDocument || document,
-			stack = [mainParent, vdom, null], parent, node;
 
 		while (stack.length) {
 			var ns = stack.pop(), element = stack.pop();
@@ -153,18 +34,18 @@
 
 			if (!(element instanceof Array)) {
 				// make a specialty node
-				if (typeof element == 'string') {
+				if (textTypes[typeof element] || element instanceof Date || element instanceof RegExp) {
 					// text
-					node = doc.createTextNode(element);
+					node = doc.createTextNode(element.toString());
 				} else if (typeof element.appendChild == 'function') {
 					// node
 					node = element;
 				} else if (parent && typeof element == 'object') {
 					// attributes
-					setAttributes(parent, element, options);
+					create.setAttrs(parent, element, options);
 				}
 				// add it to a parent
-				if (parent && node) {
+				if (node && parent) {
 					parent.appendChild(node);
 				}
 				continue;
@@ -179,7 +60,7 @@
 			// make a node
 			if (typeof tag == 'string') {
 				// tag
-				node = buildElement(tag, null, ns, doc, options);
+				node = create(tag, null, doc, ns, options);
 			} else if (tag && typeof tag.appendChild == 'function') {
 				// node
 				node = tag;
@@ -214,41 +95,6 @@
 
 		return parent || node;
 	}
-
-	// implementing hyperscript (see https://github.com/dominictarr/hyperscript)
-	function hyperscript (tag, attributes, children) {
-		var node = buildElement(tag), rest = new Array(arguments.length - 1), i;
-		for (i = 1; i < arguments.length; ++i) {
-			rest[i - 1] = arguments[i];
-		}
-		return addToNode(node, rest);
-	}
-
-	function addToNode (node, children) {
-		for (var i = 0; i < children.length; ++i) {
-			var child = children[i];
-			if (!child) {
-				// ignore
-			} else if (typeof child == 'string') {
-				node.appendChild(node.ownerDocument.createTextNode(child));
-			} else if (child instanceof Array) {
-				addToNode(node, child);
-			} else if (typeof child.appendChild == 'function') {
-				node.appendChild(child);
-			} else {
-				setProperties(node, child);
-			}
-		}
-		return node;
-	}
-
-	build.text        = buildText;
-	build.element     = buildElement;
-	build.setAttrs    = setAttributes;
-	build.setProps    = setProperties;
-	build.setStyle    = setStyle;
-	build.assignStyle = assignStyle;
-	build.hyperscript = hyperscript;
 
 	return build;
 });
