@@ -10,22 +10,27 @@ define([], function () {
 		parseName = /^(?:(\w+)\:)?([^\s\.#]*)/,
 		parseSelector = /[\.#][^\s\.#]+/g;
 
+	function allKeys (object) {
+		var keys = [];
+		for (var key in object) { keys.push(key); }
+		return keys;
+	}
 
 	function assignStyle (node, styles) {
-		var styleKeys = Object.keys(styles);
-		for (var i = 0; i < styleKeys.length; ++i) {
-			var key = styleKeys[i];
+		var keys = allKeys(styles);
+		for (var i = 0; i < keys.length; ++i) {
+			var key = keys[i];
 			node.style[key] = styles[key];
 		}
 		return node;
 	}
 
 	function setStyle (node, styles) {
-		var styleKeys = Object.keys(styles);
-		for (var i = 0; i < styleKeys.length; ++i) {
-			var key = styleKeys[i];
+		var keys = allKeys(styles);
+		for (var i = 0; i < keys.length; ++i) {
+			var key = keys[i];
 			if (key === '$') {
-				assignStyle(node, styles.$);
+				create.assignStyle(node, styles.$);
 			} else {
 				node.style.setProperty(key, styles[key]);
 			}
@@ -33,42 +38,55 @@ define([], function () {
 		return node;
 	}
 
+	function setData (node, dataset) {
+		var keys = allKeys(dataset);
+		for (var i = 0; i < keys.length; ++i) {
+			var key = keys[i];
+			node.dataset[key] = dataset[key];
+		}
+		return node;
+	}
 
 	function setProperties (node, props) {
-		var propKeys = Object.keys(props);
-		for (var i = 0; i < propKeys.length; ++i) {
-			var key = propKeys[i];
-			if (key === 'style') {
-				if (typeof props.style == 'string') {
-					node.style.cssText = props.style;
-				} else {
-					setStyle(node, props.style);
-				}
-			} else {
-				node[key] = props[key];
+		var keys = allKeys(props);
+		for (var i = 0; i < keys.length; ++i) {
+			var key = keys[i];
+			switch (key) {
+				case 'style':
+					if (typeof props.style == 'string') {
+						node.style.cssText = props.style;
+					} else {
+						create.setStyle(node, props.style);
+					}
+					break;
+				case 'dataset':
+					create.setData(node, props.dataset);
+					break;
+				default:
+					node[key] = props[key];
+					break;
 			}
 		}
 		return node;
 	}
 
-
 	function setAttributes (node, attributes, options) {
-		var attrKeys = Object.keys(attributes);
-		for (var i = 0; i < attrKeys.length; ++i) {
-			var key = attrKeys[i];
+		var keys = allKeys(attributes);
+		for (var i = 0; i < keys.length; ++i) {
+			var key = keys[i];
 			switch (key) {
 				case '$':
 					if (options && typeof options.setComponentProperties == 'function' && node.tagName.indexOf('-') > 0) {
 						options.setComponentProperties(node, attributes.$);
 					} else {
-						setProperties(node, attributes.$);
+						create.setProps(node, attributes.$);
 					}
 					break;
 				case 'style':
 					if (typeof attributes.style == 'string') {
 						node.style.cssText = attributes.style;
 					} else {
-						setStyle(node, attributes.style);
+						create.setStyle(node, attributes.style);
 					}
 					break;
 				case 'class':
@@ -91,7 +109,6 @@ define([], function () {
 		return node;
 	}
 
-
 	function createText (text, parent) {
 		var doc = document;
 		if (parent) {
@@ -108,7 +125,6 @@ define([], function () {
 		}
 		return node;
 	}
-
 
 	function create (tag, attributes, parent, ns, options) {
 		var doc = options && options.document || document;
@@ -150,7 +166,7 @@ define([], function () {
 		}
 
 		if (attributes) {
-			setAttributes(node, attributes, options);
+			create.setAttrs(node, attributes, options);
 		}
 
 		if (parent && parent.nodeType === 1) {
@@ -160,8 +176,10 @@ define([], function () {
 	}
 
 	create.text = createText;
+	create.allKeys  = allKeys;
 	create.setAttrs = setAttributes;
 	create.setProps = setProperties;
+	create.setData  = setData;
 	create.setStyle = setStyle;
 	create.assignStyle = assignStyle;
 	create.namespaces  = namespaces;
