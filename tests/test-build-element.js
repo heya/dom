@@ -1,5 +1,5 @@
-define(["module", "heya-unit", "../build"], function (module, unit, build) {
-	"use strict";
+define(['module', 'heya-unit', '../build'], function (module, unit, build) {
+	'use strict';
 
 	unit.add(module, [
 		function test_div (t) {
