@@ -85,6 +85,11 @@ define(['module', 'heya-unit', '../build'], function (module, unit, build) {
 			eval(t.TEST('node.classList.contains("a")'));
 			eval(t.TEST('node.classList.contains("b")'));
 			eval(t.TEST('node.id === "x"'));
+		},
+		function test_text (t) {
+			var node = build.text('Hello!');
+			eval(t.TEST('node.nodeName === "#text"'));
+			eval(t.TEST('node.nodeValue === "Hello!"'));
 		}
 	]);
 
