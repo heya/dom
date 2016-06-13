@@ -1,6 +1,8 @@
 define(['./create'], function (create) {
 	'use strict';
 
+	var textTypes = {string: 1, number: 1, boolean: 1};
+
 	// implementing hyperscript (see https://github.com/dominictarr/hyperscript)
 	function hyperscript (tag, attributes, children) {
 		var node = create(tag), rest = new Array(arguments.length - 1), i;
@@ -13,10 +15,10 @@ define(['./create'], function (create) {
 	function addToNode (node, children) {
 		for (var i = 0; i < children.length; ++i) {
 			var child = children[i];
-			if (!child) {
-				// ignore
-			} else if (typeof child == 'string') {
-				node.appendChild(node.ownerDocument.createTextNode(child));
+			if (textTypes[typeof child] || child instanceof Date || child instanceof RegExp) {
+				node.appendChild(node.ownerDocument.createTextNode(child.toString()));
+			} else if (!child) {
+				// skip
 			} else if (child instanceof Array) {
 				addToNode(node, child);
 			} else if (typeof child.appendChild == 'function') {
