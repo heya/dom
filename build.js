@@ -133,6 +133,8 @@ define([], function () {
 		return (doc || document).createTextNode(text);
 	}
 
+	var textTypes = {string: 1, number: 1, boolean: 1};
+
 	function build (vdom, mainParent, options) {
 		var doc = options && options.document ||
 				mainParent && mainParent.ownerDocument || document,
@@ -155,9 +157,9 @@ define([], function () {
 
 			if (!(element instanceof Array)) {
 				// make a specialty node
-				if (typeof element == 'string') {
+				if (textTypes[typeof element] || element instanceof Date || element instanceof RegExp) {
 					// text
-					node = doc.createTextNode(element);
+					node = doc.createTextNode(element.toString());
 				} else if (typeof element.appendChild == 'function') {
 					// node
 					node = element;
@@ -166,7 +168,7 @@ define([], function () {
 					setAttributes(parent, element, options);
 				}
 				// add it to a parent
-				if (parent && node) {
+				if (node && parent) {
 					parent.appendChild(node);
 				}
 				continue;
