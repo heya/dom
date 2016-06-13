@@ -75,6 +75,9 @@ define([], function () {
 				case 'className':
 					node.className = attributes[key];
 					break;
+				case 'id':
+					node.id = attributes.id;
+					break;
 				default:
 					var name = parseName.exec(key);
 					if (name) {
