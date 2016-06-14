@@ -109,7 +109,7 @@
 				default:
 					var name = parseName.exec(key);
 					if (name && name[1]) {
-						node.setAttributeNS(namespaces[name[1]], name[2], attributes[key]);
+						node.setAttributeNS(create.namespaces[name[1]], name[2], attributes[key]);
 					} else {
 						if (typeof attributes[key] == 'function') {
 							addListener(node, key, attributes[key]);
@@ -156,7 +156,7 @@
 
 		ns = name[1] || ns;
 		if (ns) {
-			node = doc.createElementNS(namespaces[ns], name[2] || 'div');
+			node = doc.createElementNS(create.namespaces[ns], name[2] || 'div');
 		} else {
 			node = doc.createElement(name[2] || 'div');
 		}
