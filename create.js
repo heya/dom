@@ -153,29 +153,25 @@ define([], function () {
 		// create an element
 		var name = parseName.exec(tag), node;
 
-		if (name) {
-			ns = name[1] || ns;
-			if (ns) {
-				node = doc.createElementNS(namespaces[ns], name[2] || 'div');
-			} else {
-				node = doc.createElement(name[2] || 'div');
-			}
-			if (name[0].length < tag.length) {
-				// add selector's classes and ids
-				tag.substring(name[0].length).replace(parseSelector, function (match) {
-					switch (match.charAt(0)) {
-						case '.':
-							node.classList.add(match.substring(1));
-							break;
-						case '#':
-							node.id = match.substring(1);
-							break;
-					}
-					return '';
-				});
-			}
+		ns = name[1] || ns;
+		if (ns) {
+			node = doc.createElementNS(namespaces[ns], name[2] || 'div');
 		} else {
-			node = doc.createElement(tag);
+			node = doc.createElement(name[2] || 'div');
+		}
+		if (name[0].length < tag.length) {
+			// add selector's classes and ids
+			tag.substring(name[0].length).replace(parseSelector, function (match) {
+				switch (match.charAt(0)) {
+					case '.':
+						node.classList.add(match.substring(1));
+						break;
+					case '#':
+						node.id = match.substring(1);
+						break;
+				}
+				return '';
+			});
 		}
 
 		if (attributes) {
