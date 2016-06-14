@@ -47,6 +47,14 @@ define([], function () {
 		return node;
 	}
 
+	function addListener (node, name, value) {
+		var type = name;
+		if (type.substring(0, 2) == 'on') {
+			type = type.substring(2);
+		}
+		node.addEventListener(type, value, false);
+	}
+
 	function setProperties (node, props) {
 		var keys = allKeys(props);
 		for (var i = 0; i < keys.length; ++i) {
@@ -63,7 +71,11 @@ define([], function () {
 					create.setData(node, props.dataset);
 					break;
 				default:
-					node[key] = props[key];
+					if (typeof props[key] == 'function') {
+						addListener(node, key, props[key]);
+					} else {
+						node[key] = props[key];
+					}
 					break;
 			}
 		}
@@ -93,15 +105,16 @@ define([], function () {
 				case 'className':
 					node.className = attributes[key];
 					break;
-				case 'id':
-					node.id = attributes.id;
-					break;
 				default:
 					var name = parseName.exec(key);
-					if (name) {
+					if (name && name[1]) {
 						node.setAttributeNS(namespaces[name[1]], name[2], attributes[key]);
 					} else {
-						node.setAttribute(key, attributes[key]);
+						if (typeof attributes[key] == 'function') {
+							addListener(node, key, attributes[key]);
+						} else {
+							node.setAttribute(key, attributes[key]);
+						}
 					}
 					break;
 			}

@@ -90,6 +90,74 @@ define(['module', 'heya-unit', '../create'], function (module, unit, create) {
 			var node = create.text('Hello!');
 			eval(t.TEST('node.nodeName === "#text"'));
 			eval(t.TEST('node.nodeValue === "Hello!"'));
+		},
+		{
+			test: function test_event_attr_on (t) {
+				var x = t.startAsync();
+
+				var node = create('div', {onclick: handler});
+
+				var event = document.createEvent('HTMLEvents');
+                event.initEvent('click', true, true); // event type, bubbling, cancelable
+				node.dispatchEvent(event);
+
+				function handler () {
+					t.info('click!');
+					x.done();
+				}
+			},
+			logs: ['click!']
+		},
+		{
+			test: function test_event_attr (t) {
+				var x = t.startAsync();
+
+				var node = create('div', {click: handler});
+
+				var event = document.createEvent('HTMLEvents');
+				event.initEvent('click', true, true); // event type, bubbling, cancelable
+				node.dispatchEvent(event);
+
+				function handler () {
+					t.info('click!');
+					x.done();
+				}
+			},
+			logs: ['click!']
+		},
+		{
+			test: function test_event_prop_on (t) {
+				var x = t.startAsync();
+
+				var node = create('div', {$: {onclick: handler}});
+
+				var event = document.createEvent('HTMLEvents');
+                event.initEvent('click', true, true); // event type, bubbling, cancelable
+				node.dispatchEvent(event);
+
+				function handler () {
+					t.info('click!');
+					x.done();
+				}
+			},
+			logs: ['click!']
+		},
+		{
+			test: function test_event_prop (t) {
+				var x = t.startAsync();
+
+				var node = create('div', {$: {onclick: handler}});
+
+				var event = document.createEvent('HTMLEvents');
+				event.initEvent('click', true, true); // event type, bubbling, cancelable
+				node.dispatchEvent(event);
+
+				function handler () {
+					t.info('click!');
+					x.done();
+				}
+			},
+			logs: ['click!']
 		}
 	]);
 
