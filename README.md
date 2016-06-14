@@ -16,7 +16,7 @@ Following modules are provided:
 
 # Examples
 
-We want to create a following simple list:
+We want to create the following simple list:
 
 ```html
 <ul data-sort="asc">
