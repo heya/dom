@@ -5,6 +5,64 @@
 [![devDependencies][dev-deps-image]][dev-deps-url]
 [![NPM version][npm-image]][npm-url]
 
+`heya-dom` is used on browser to simplify DOM-related tasks, especially construction, and modification of DOM.
+
+Following modules are provided:
+
+* [create](https://github.com/heya/dom/wiki/create) &mdash; largely based on venerable [Dojo](http://dojotoolkit.org). Includes creating DOM nodes with optional namespaces, setting attributes, properties, styles, and similar helpers.
+* [build](https://github.com/heya/dom/wiki/build) &mdash; a Virtual DOM-inspired utility to create DOM fragments in one go using a simple array-based structure.
+* [hyperscript](https://github.com/heya/dom/wiki/hyperscript) &mdash; an alternative for `build`, a minimalistic implementation of [Dominic Tarr](https://github.com/dominictarr)'s [hyperscript](https://github.com/dominictarr/hyperscript). It is there mostly to reuse existing tooling, and existing code created for other implementations.
+* [fromHtml](https://github.com/heya/dom/wiki/fromHtml) &mdash; a helper to instantiate HTML snippets as `DocumentFragment`.
+
+# Examples
+
+We want to create a following simple list:
+
+```html
+<ul data-sort="asc">
+  <li>one</li>
+  <li class="x">two</li>
+  <li>three</li>
+</ul>
+```
+
+Let's do it with `create()` (low-level):
+
+```js
+var root = create('ul', {'data-sort': 'asc'});
+create('li',   {$: {innerHTML: 'one'}},   root);
+create('li.x', {$: {innerHTML: 'two'}},   root);
+create('li',   {$: {innerHTML: 'three'}}, root);
+```
+
+Let's do it with `build()`:
+
+```js
+var root = build(['ul', {'data-sort': 'asc'},
+  ['li', 'one'], ['li.x', 'two'], ['li', 'three']]);
+```
+
+Let's do it with `hyperscript()`:
+
+```js
+var h = hyperscript;
+
+var root = h('ul', {dataset: {sort: 'asc'}},
+  h('li', 'one'), h('li.x', 'two'), h('li', 'three'));
+```
+
+Let's do it with `fromHtml()`:
+
+```js
+var root = fromHtml(
+  '<ul data-sort="asc">' +
+    '<li>one</li>' +
+    '<li class="x">two</li>' +
+    '<li>three</li>' +
+  '</ul>'
+);
+```
+
 # How to install
 
 With npm:
@@ -44,6 +102,8 @@ document.body.appendChild(heya.dom.build([
   'p', 'Hello, world!'
 ]));
 ```
+
+See [How to include](https://github.com/heya/dom/wiki/How-to-include) for more details.
 
 # Documentation
 
