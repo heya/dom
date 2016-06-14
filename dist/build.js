@@ -27,16 +27,13 @@
 				element = element(options);
 			}
 
-			if (!element) {
-				// skip
-				continue;
-			}
-
 			if (!(element instanceof Array)) {
 				// make a specialty node
 				if (textTypes[typeof element] || element instanceof Date || element instanceof RegExp) {
 					// text
 					node = doc.createTextNode(element.toString());
+				} else if (!element) {
+					// skip
 				} else if (typeof element.appendChild == 'function') {
 					// node
 					node = element;

@@ -11,22 +11,27 @@
 		parseName = /^(?:(\w+)\:)?([^\s\.#]*)/,
 		parseSelector = /[\.#][^\s\.#]+/g;
 
+	function allKeys (object) {
+		var keys = [];
+		for (var key in object) { keys.push(key); }
+		return keys;
+	}
 
 	function assignStyle (node, styles) {
-		var styleKeys = Object.keys(styles);
-		for (var i = 0; i < styleKeys.length; ++i) {
-			var key = styleKeys[i];
+		var keys = allKeys(styles);
+		for (var i = 0; i < keys.length; ++i) {
+			var key = keys[i];
 			node.style[key] = styles[key];
 		}
 		return node;
 	}
 
 	function setStyle (node, styles) {
-		var styleKeys = Object.keys(styles);
-		for (var i = 0; i < styleKeys.length; ++i) {
-			var key = styleKeys[i];
+		var keys = allKeys(styles);
+		for (var i = 0; i < keys.length; ++i) {
+			var key = keys[i];
 			if (key === '$') {
-				assignStyle(node, styles.$);
+				create.assignStyle(node, styles.$);
 			} else {
 				node.style.setProperty(key, styles[key]);
 			}
@@ -34,64 +39,89 @@
 		return node;
 	}
 
+	function setData (node, dataset) {
+		var keys = allKeys(dataset);
+		for (var i = 0; i < keys.length; ++i) {
+			var key = keys[i];
+			node.dataset[key] = dataset[key];
+		}
+		return node;
+	}
+
+	function addListener (node, name, value) {
+		var type = name;
+		if (type.substring(0, 2) == 'on') {
+			type = type.substring(2);
+		}
+		node.addEventListener(type, value, false);
+	}
 
 	function setProperties (node, props) {
-		var propKeys = Object.keys(props);
-		for (var i = 0; i < propKeys.length; ++i) {
-			var key = propKeys[i];
-			if (key === 'style') {
-				if (typeof props.style == 'string') {
-					node.style.cssText = props.style;
-				} else {
-					setStyle(node, props.style);
-				}
-			} else {
-				node[key] = props[key];
+		var keys = allKeys(props);
+		for (var i = 0; i < keys.length; ++i) {
+			var key = keys[i];
+			switch (key) {
+				case 'style':
+					if (typeof props.style == 'string') {
+						node.style.cssText = props.style;
+					} else {
+						create.setStyle(node, props.style);
+					}
+					break;
+				case 'dataset':
+					create.setData(node, props.dataset);
+					break;
+				default:
+					if (typeof props[key] == 'function') {
+						addListener(node, key, props[key]);
+					} else {
+						node[key] = props[key];
+					}
+					break;
 			}
 		}
 		return node;
 	}
 
-
 	function setAttributes (node, attributes, options) {
-		var attrKeys = Object.keys(attributes);
-		for (var i = 0; i < attrKeys.length; ++i) {
-			var key = attrKeys[i];
+		var keys = allKeys(attributes);
+		for (var i = 0; i < keys.length; ++i) {
+			var key = keys[i];
 			switch (key) {
 				case '$':
 					if (options && typeof options.setComponentProperties == 'function' && node.tagName.indexOf('-') > 0) {
 						options.setComponentProperties(node, attributes.$);
 					} else {
-						setProperties(node, attributes.$);
+						create.setProps(node, attributes.$);
 					}
 					break;
 				case 'style':
 					if (typeof attributes.style == 'string') {
 						node.style.cssText = attributes.style;
 					} else {
-						setStyle(node, attributes.style);
+						create.setStyle(node, attributes.style);
 					}
 					break;
 				case 'class':
 				case 'className':
 					node.className = attributes[key];
 					break;
-				case 'id':
-					node.id = attributes.id;
-					break;
 				default:
 					var name = parseName.exec(key);
-					if (name) {
+					if (name && name[1]) {
 						node.setAttributeNS(namespaces[name[1]], name[2], attributes[key]);
 					} else {
-						node.setAttribute(key, attributes[key]);
+						if (typeof attributes[key] == 'function') {
+							addListener(node, key, attributes[key]);
+						} else {
+							node.setAttribute(key, attributes[key]);
+						}
 					}
 					break;
 			}
 		}
 		return node;
 	}
-
 
 	function createText (text, parent) {
 		var doc = document;
@@ -110,7 +140,6 @@
 		return node;
 	}
 
-
 	function create (tag, attributes, parent, ns, options) {
 		var doc = options && options.document || document;
 		if (parent) {
@@ -125,33 +154,29 @@
 		// create an element
 		var name = parseName.exec(tag), node;
 
-		if (name) {
-			ns = name[1] || ns;
-			if (ns) {
-				node = doc.createElementNS(namespaces[ns], name[2] || 'div');
-			} else {
-				node = doc.createElement(name[2] || 'div');
-			}
-			if (name[0].length < tag.length) {
-				// add selector's classes and ids
-				tag.substring(name[0].length).replace(parseSelector, function (match) {
-					switch (match.charAt(0)) {
-						case '.':
-							node.classList.add(match.substring(1));
-							break;
-						case '#':
-							node.id = match.substring(1);
-							break;
-					}
-					return '';
-				});
-			}
+		ns = name[1] || ns;
+		if (ns) {
+			node = doc.createElementNS(namespaces[ns], name[2] || 'div');
 		} else {
-			node = doc.createElement(tag);
+			node = doc.createElement(name[2] || 'div');
+		}
+		if (name[0].length < tag.length) {
+			// add selector's classes and ids
+			tag.substring(name[0].length).replace(parseSelector, function (match) {
+				switch (match.charAt(0)) {
+					case '.':
+						node.classList.add(match.substring(1));
+						break;
+					case '#':
+						node.id = match.substring(1);
+						break;
+				}
+				return '';
+			});
 		}
 
 		if (attributes) {
-			setAttributes(node, attributes, options);
+			create.setAttrs(node, attributes, options);
 		}
 
 		if (parent && parent.nodeType === 1) {
@@ -161,8 +186,10 @@
 	}
 
 	create.text = createText;
+	create.allKeys  = allKeys;
 	create.setAttrs = setAttributes;
 	create.setProps = setProperties;
+	create.setData  = setData;
 	create.setStyle = setStyle;
 	create.assignStyle = assignStyle;
 	create.namespaces  = namespaces;
