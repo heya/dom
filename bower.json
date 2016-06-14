@@ -1,7 +1,6 @@
 {
   "name": "heya-dom",
   "description": "DOM utilities.",
-  "main": "main.js",
   "authors": [
     "Eugene Lazutkin <eugene.lazutkin@gmail.com> (http://lazutkin.com/)"
   ],
