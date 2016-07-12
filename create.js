@@ -16,21 +16,25 @@ define([], function () {
 		return keys;
 	}
 
-	function assignStyle (node, styles) {
-		var keys = allKeys(styles);
-		for (var i = 0; i < keys.length; ++i) {
-			var key = keys[i];
-			node.style[key] = styles[key];
-		}
-		return node;
-	}
-
-	function setStyle (node, styles) {
+	function assignStyle (node, styles, options) {
 		var keys = allKeys(styles);
 		for (var i = 0; i < keys.length; ++i) {
 			var key = keys[i];
 			if (key === '$') {
-				create.assignStyle(node, styles.$);
+				create.setStyle(node, styles.$, options);
+			} else {
+				node.style[key] = styles[key];
+			}
+		}
+		return node;
+	}
+
+	function setStyle (node, styles, options) {
+		var keys = allKeys(styles);
+		for (var i = 0; i < keys.length; ++i) {
+			var key = keys[i];
+			if (key === '$') {
+				create.assignStyle(node, styles.$, options);
 			} else {
 				node.style.setProperty(key, styles[key]);
 			}
@@ -38,7 +42,7 @@ define([], function () {
 		return node;
 	}
 
-	function setData (node, dataset) {
+	function setData (node, dataset, options) {
 		var keys = allKeys(dataset);
 		for (var i = 0; i < keys.length; ++i) {
 			var key = keys[i];
@@ -55,20 +59,23 @@ define([], function () {
 		node.addEventListener(type, value, false);
 	}
 
-	function setProperties (node, props) {
+	function setProperties (node, props, options) {
 		var keys = allKeys(props);
 		for (var i = 0; i < keys.length; ++i) {
 			var key = keys[i];
 			switch (key) {
+				case '$':
+					create.setAttrs(node, props.$, options);
+					break;
 				case 'style':
 					if (typeof props.style == 'string') {
 						node.style.cssText = props.style;
 					} else {
-						create.setStyle(node, props.style);
+						create.setStyle(node, props.style, options);
 					}
 					break;
 				case 'dataset':
-					create.setData(node, props.dataset);
+					create.setData(node, props.dataset, options);
 					break;
 				default:
 					if (typeof props[key] == 'function') {
@@ -89,9 +96,9 @@ define([], function () {
 			switch (key) {
 				case '$':
 					if (options && typeof options.setComponentProperties == 'function' && node.tagName.indexOf('-') > 0) {
-						options.setComponentProperties(node, attributes.$);
+						options.setComponentProperties(node, attributes.$, options);
 					} else {
-						create.setProps(node, attributes.$);
+						create.setProps(node, attributes.$, options);
 					}
 					break;
 				case 'style':
@@ -122,8 +129,8 @@ define([], function () {
 		return node;
 	}
 
-	function createText (text, parent) {
-		var doc = document;
+	function createText (text, parent, options) {
+		var doc = options && options.document || document;
 		if (parent) {
 			if (parent.nodeType === 9) {
 				doc = parent;
