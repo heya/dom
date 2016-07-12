@@ -111,6 +111,7 @@ All documentation can be found in [project's wiki](https://github.com/heya/dom/w
 
 # Versions
 
+- 1.0.2 &mdash; *Consistently added options and dollar escapes.*
 - 1.0.1 &mdash; *Cosmetic change: removed the missing main module.*
 - 1.0.0 &mdash; *The initial public release as heya-dom.*
 
