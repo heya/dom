@@ -111,6 +111,7 @@ All documentation can be found in [project's wiki](https://github.com/heya/dom/w
 
 # Versions
 
+- 1.0.3 &mdash; *Refreshed dependencies.*
 - 1.0.2 &mdash; *Consistently added options and dollar escapes.*
 - 1.0.1 &mdash; *Cosmetic change: removed the missing main module.*
 - 1.0.0 &mdash; *The initial public release as heya-dom.*
@@ -125,6 +126,6 @@ BSD or AFL &mdash; your choice.
 [deps-image]:     https://img.shields.io/david/heya/dom.svg
 [deps-url]:       https://david-dm.org/heya/dom
 [dev-deps-image]: https://img.shields.io/david/dev/heya/dom.svg
-[dev-deps-url]:   https://david-dm.org/heya/dom#info=devDependencies
+[dev-deps-url]:   https://david-dm.org/heya/dom?type=dev
 [travis-image]:   https://img.shields.io/travis/heya/dom.svg
 [travis-url]:     https://travis-ci.org/heya/dom
